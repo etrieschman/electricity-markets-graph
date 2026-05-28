@@ -4,7 +4,7 @@ A typed multigraph of U.S. wholesale electricity market structure, built as a re
 
 The graph treats the electricity market as a network of **actors** (institutional entities that make decisions) and **markets** (recurring or standing arrangements where transactions clear, spanning the liquidity gradient from ISO auctions to administratively-set retail tariffs), connected by four types of edges: **action**, **money**, **regulation**, and **information**.
 
-**[View the interactive graph](https://YOUR_USERNAME.github.io/electricity-markets-graph/)**
+**[View the interactive graph](https://etrieschman.github.io/electricity-markets-graph/)**
 
 ## Motivation
 
