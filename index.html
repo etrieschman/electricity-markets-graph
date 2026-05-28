@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Electricity Markets — Framework Graph</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=JetBrains+Mono:wght@400;500&family=Inter+Tight:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/cytoscape@3.28.1/dist/cytoscape.min.js"></script>
+<script src="https://unpkg.com/layout-base/layout-base.js"></script>
+<script src="https://unpkg.com/cose-base/cose-base.js"></script>
+<script src="https://unpkg.com/cytoscape-fcose@2.2.0/cytoscape-fcose.js"></script>
+<style>
+:root {
+  --bg: #f5f2ea;
+  --bg-panel: #ebe5d5;
+  --ink: #1a1814;
+  --ink-soft: #5c574b;
+  --rule: #2a2620;
+  --accent: #8a3324;
+  --actor: #1f3a5f;
+  --market: #5a4a2a;
+  --action: #2e5f3e;
+  --money: #8a3324;
+  --regulation: #4a3a6a;
+  --information: #7a6a3a;
+  --shadow: 0 1px 2px rgba(0,0,0,0.06);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Inter Tight', -apple-system, sans-serif;
+  background: var(--bg);
+  color: var(--ink);
+  height: 100vh;
+  display: grid;
+  grid-template-columns: 320px 1fr 360px;
+  grid-template-rows: 56px 1fr;
+  overflow: hidden;
+}
+
+header {
+  grid-column: 1 / -1;
+  border-bottom: 1px solid var(--rule);
+  padding: 0 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--bg);
+  z-index: 10;
+}
+
+header h1 {
+  font-family: 'Fraunces', Georgia, serif;
+  font-weight: 500;
+  font-size: 19px;
+  letter-spacing: -0.01em;
+  font-variation-settings: "opsz" 30;
+}
+
+header h1 em {
+  font-style: italic;
+  color: var(--accent);
+  font-weight: 400;
+}
+
+header .meta {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--ink-soft);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+aside.left, aside.right {
+  background: var(--bg-panel);
+  overflow-y: auto;
+  padding: 20px;
+}
+
+aside.left { border-right: 1px solid var(--rule); }
+aside.right { border-left: 1px solid var(--rule); }
+
+.section {
+  margin-bottom: 24px;
+}
+
+.section h2 {
+  font-family: 'Fraunces', Georgia, serif;
+  font-weight: 500;
+  font-size: 13px;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--ink);
+  margin-bottom: 10px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--rule);
+}
+
+.section h2 .count {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  color: var(--ink-soft);
+  font-weight: 400;
+  text-transform: none;
+  letter-spacing: 0;
+  float: right;
+  margin-top: 2px;
+}
+
+.filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.filter-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 8px;
+  cursor: pointer;
+  border-radius: 2px;
+  transition: background 0.1s;
+  font-size: 13px;
+}
+
+.filter-row:hover { background: rgba(0,0,0,0.04); }
+
+.filter-row input[type="checkbox"] {
+  margin: 0;
+  accent-color: var(--ink);
+}
+
+.swatch {
+  width: 18px;
+  height: 3px;
+  flex-shrink: 0;
+}
+
+.swatch.action { background: var(--action); }
+.swatch.money { background: var(--money); }
+.swatch.regulation { background: var(--regulation); }
+.swatch.information { background: var(--information); border-top: 1px dashed var(--information); height: 0; border-bottom: 0; }
+
+.filter-row .count {
+  margin-left: auto;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  color: var(--ink-soft);
+}
+
+.layout-select {
+  display: flex;
+  gap: 0;
+  border: 1px solid var(--rule);
+}
+
+.layout-select button {
+  flex: 1;
+  background: transparent;
+  border: none;
+  padding: 8px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  cursor: pointer;
+  color: var(--ink-soft);
+  border-right: 1px solid var(--rule);
+  transition: all 0.1s;
+}
+
+.layout-select button:last-child { border-right: none; }
+
+.layout-select button:hover { background: rgba(0,0,0,0.04); }
+
+.layout-select button.active {
+  background: var(--ink);
+  color: var(--bg);
+}
+
+.search-box {
+  width: 100%;
+  padding: 8px 10px;
+  border: 1px solid var(--rule);
+  background: var(--bg);
+  font-family: 'Inter Tight', sans-serif;
+  font-size: 13px;
+  color: var(--ink);
+}
+
+.search-box:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+#cy {
+  background: var(--bg);
+  position: relative;
+}
+
+.legend-node {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+  padding: 4px 0;
+}
+
+.legend-node .dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.legend-node .dot.actor { background: var(--actor); }
+.legend-node .dot.market { background: var(--market); border-radius: 2px; }
+
+.detail-panel {
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.detail-panel .empty {
+  color: var(--ink-soft);
+  font-style: italic;
+  font-family: 'Fraunces', Georgia, serif;
+  font-weight: 400;
+  font-size: 14px;
+}
+
+.detail-panel h3 {
+  font-family: 'Fraunces', Georgia, serif;
+  font-weight: 500;
+  font-size: 22px;
+  letter-spacing: -0.01em;
+  margin-bottom: 4px;
+  font-variation-settings: "opsz" 30;
+}
+
+.detail-panel .category-tag {
+  display: inline-block;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  margin-bottom: 14px;
+}
+
+.detail-panel .description {
+  margin-bottom: 18px;
+  color: var(--ink);
+}
+
+.detail-panel h4 {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  margin: 16px 0 8px;
+  padding-bottom: 4px;
+  border-bottom: 1px solid var(--rule);
+}
+
+.edge-item {
+  padding: 8px 0;
+  border-bottom: 1px solid rgba(42, 38, 32, 0.15);
+}
+
+.edge-item:last-child { border-bottom: none; }
+
+.edge-item .edge-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+  font-size: 12px;
+}
+
+.edge-item .type-tag {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 2px 5px;
+  color: var(--bg);
+}
+
+.edge-item .type-tag.action { background: var(--action); }
+.edge-item .type-tag.money { background: var(--money); }
+.edge-item .type-tag.regulation { background: var(--regulation); }
+.edge-item .type-tag.information { background: var(--information); }
+
+.edge-item .other-node {
+  font-weight: 500;
+}
+
+.edge-item .arrow {
+  color: var(--ink-soft);
+}
+
+.edge-item .edge-desc {
+  font-size: 12px;
+  color: var(--ink-soft);
+  line-height: 1.45;
+}
+
+footer {
+  position: absolute;
+  bottom: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  color: var(--ink-soft);
+  letter-spacing: 0.04em;
+  pointer-events: none;
+}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Electricity Market Structure </h1>
+  <div class="meta">v0.1 · 17 nodes · 77 edges</div>
+</header>
+
+<aside class="left">
+  <div class="section">
+    <h2>Layout</h2>
+    <div class="layout-select">
+      <button data-layout="fcose" class="active">Force</button>
+      <button data-layout="concentric">Concentric</button>
+      <button data-layout="circle">Circle</button>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>Search</h2>
+    <input type="text" class="search-box" id="search" placeholder="Filter nodes...">
+  </div>
+
+  <div class="section">
+    <h2>Edge Types</h2>
+    <div class="filter-group" id="edge-filters">
+      <label class="filter-row">
+        <input type="checkbox" data-type="action" checked>
+        <span class="swatch action"></span>
+        <span>Action</span>
+        <span class="count" id="count-action">0</span>
+      </label>
+      <label class="filter-row">
+        <input type="checkbox" data-type="money" checked>
+        <span class="swatch money"></span>
+        <span>Money</span>
+        <span class="count" id="count-money">0</span>
+      </label>
+      <label class="filter-row">
+        <input type="checkbox" data-type="regulation" checked>
+        <span class="swatch regulation"></span>
+        <span>Regulation</span>
+        <span class="count" id="count-regulation">0</span>
+      </label>
+      <label class="filter-row">
+        <input type="checkbox" data-type="information" checked>
+        <span class="swatch information"></span>
+        <span>Information</span>
+        <span class="count" id="count-information">0</span>
+      </label>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>Node Types</h2>
+    <div class="legend-node">
+      <span class="dot actor"></span>
+      <span>Actor</span>
+      <span class="count" id="count-actor" style="margin-left:auto;font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--ink-soft);">0</span>
+    </div>
+    <div class="legend-node">
+      <span class="dot market"></span>
+      <span>Market</span>
+      <span class="count" id="count-market" style="margin-left:auto;font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--ink-soft);">0</span>
+    </div>
+  </div>
+</aside>
+
+<div id="cy">
+  <footer>Click a node to inspect · Drag to pan · Scroll to zoom</footer>
+</div>
+
+<aside class="right">
+  <div class="section">
+    <h2>Selection</h2>
+    <div class="detail-panel" id="detail">
+      <div class="empty">Select a node to see its description and incident edges.</div>
+    </div>
+  </div>
+</aside>
+
+<script>
+// === GRAPH DATA (embedded) ===
+const GRAPH_DATA = {"nodes": [{"id": "iso", "name": "ISO/RTO", "category": "actor", "description": "Operates centralized wholesale markets and grid in restructured regions. Clears DAM/RTM/AS/capacity/FTR, runs SCUC/SCED, performs state estimation and contingency analysis. Also the central counterparty for all market settlements \u2014 collects from buyers and pays sellers.", "source": ""}, {"id": "to", "name": "Transmission Owner", "category": "actor", "description": "Owns and maintains transmission assets. May or may not be the same legal entity as the operator. Recovers capital via OATT and revenue requirement.", "source": ""}, {"id": "participants", "name": "Market Participants", "category": "actor", "description": "Generators-as-firms, LSEs, IPPs, financial traders, marketers, DER aggregators, DR providers. Holders of physical assets and/or financial positions.", "source": ""}, {"id": "customers", "name": "End Customers", "category": "actor", "description": "Residential, commercial, industrial consumers. Includes large flexible loads (data centers, electrolyzers) as a contested sub-category.", "source": ""}, {"id": "ferc", "name": "FERC", "category": "actor", "description": "Federal regulator with jurisdiction over wholesale markets and interstate transmission. Approves ISO tariffs, issues orders, adjudicates disputes.", "source": ""}, {"id": "puc", "name": "State PUCs", "category": "actor", "description": "State public utility commissions. Regulate retail rates, distribution, and (in vertically integrated states) generation.", "source": ""}, {"id": "nerc", "name": "NERC", "category": "actor", "description": "North American Electric Reliability Corporation and regional entities. Sets and enforces reliability standards.", "source": ""}, {"id": "legislature", "name": "State Legislatures", "category": "actor", "description": "State legislative bodies and energy offices. Set policy goals via RPS, decarbonization mandates, RA targets.", "source": ""}, {"id": "dam", "name": "DAM", "category": "market", "description": "Day-ahead energy market. Clears the next-day hourly schedule via SCUC. Includes RUC (reliability unit commitment) as supplemental process. Produces hourly LMPs and cleared schedules; the ISO uses these to settle.", "source": ""}, {"id": "rtm", "name": "RTM", "category": "market", "description": "Real-time energy market. Clears in 5-min intervals via SCED. Settles deviations from DAM positions at RTM LMPs.", "source": ""}, {"id": "as", "name": "AS Markets", "category": "market", "description": "Ancillary service markets \u2014 regulation, spinning, non-spinning, ramping. Co-optimized with energy in DAM and RTM.", "source": ""}, {"id": "capacity", "name": "Capacity Market", "category": "market", "description": "Multi-year forward procurement of capacity obligations (PJM RPM, ISO-NE FCM, NYISO ICAP, MISO PRA). CAISO and ERCOT use alternative mechanisms.", "source": ""}, {"id": "ftr", "name": "FTR Auction", "category": "market", "description": "Long-term, annual, and monthly auctions of congestion hedges. Cleared via simultaneous feasibility test (SFT) on a network model. FTRs are settled against DAM congestion.", "source": ""}, {"id": "arr", "name": "ARR Allocation", "category": "market", "description": "Administrative assignment of FTR auction revenues to LSEs, based on historical load and transmission cost responsibility. Paired with FTR auction but mechanically distinct \u2014 no clearing, just a formula.", "source": ""}, {"id": "bilateral", "name": "Bilateral / OTC", "category": "market", "description": "PPAs, tolling agreements, bilateral RA contracts, OTC swaps, exchange-traded futures, interconnection agreements. Spans the standardization gradient. Settles directly between counterparties, not through the ISO.", "source": ""}, {"id": "interconnection", "name": "Interconnection Process", "category": "market", "description": "The queue and study process for connecting new generation to the grid. Increasingly auction-like; allocates network upgrade costs and queue position.", "source": ""}, {"id": "rates", "name": "Regulated Rates", "category": "market", "description": "Retail tariffs, OATT transmission service, transmission revenue requirement, RMR contracts. Administratively-set far end of the liquidity gradient.", "source": ""}], "edges": [{"source": "ferc", "target": "iso", "type": "regulation", "description": "FERC approves ISO tariff, market rules, and major design changes. Jurisdictional authority over wholesale markets.", "citation": ""}, {"source": "ferc", "target": "to", "type": "regulation", "description": "FERC approves transmission rates and Open Access Transmission Tariff (OATT). Order 1000 mandated regional planning.", "citation": ""}, {"source": "ferc", "target": "participants", "type": "regulation", "description": "FERC regulates wholesale market behavior, market power, and participation rules.", "citation": ""}, {"source": "ferc", "target": "dam", "type": "regulation", "description": "FERC approves DAM design including offer caps, mitigation, and clearing rules.", "citation": ""}, {"source": "ferc", "target": "rtm", "type": "regulation", "description": "FERC approves RTM design, scarcity pricing constructs, and operating reserve demand curves where applicable.", "citation": ""}, {"source": "ferc", "target": "as", "type": "regulation", "description": "FERC approves AS product definitions and procurement rules.", "citation": ""}, {"source": "ferc", "target": "capacity", "type": "regulation", "description": "FERC approves capacity market design including accreditation, mitigation, and demand curves. Site of major contestation (MOPR, ELCC reforms).", "citation": ""}, {"source": "ferc", "target": "ftr", "type": "regulation", "description": "FERC approves FTR auction design and SFT methodology.", "citation": ""}, {"source": "ferc", "target": "arr", "type": "regulation", "description": "FERC approves ARR allocation formula in ISO tariff.", "citation": ""}, {"source": "ferc", "target": "rates", "type": "regulation", "description": "FERC sets OATT transmission service rates and transmission revenue requirements. State PUCs set retail tariffs.", "citation": ""}, {"source": "ferc", "target": "interconnection", "type": "regulation", "description": "FERC sets interconnection process rules. Order 2023 mandated cluster studies and other reforms.", "citation": ""}, {"source": "puc", "target": "participants", "type": "regulation", "description": "State PUCs regulate LSE behavior, certification, and procurement obligations.", "citation": ""}, {"source": "puc", "target": "customers", "type": "regulation", "description": "State PUCs set retail rate structures, consumer protections, and distribution-level rules.", "citation": ""}, {"source": "puc", "target": "rates", "type": "regulation", "description": "State PUCs approve retail tariffs and distribution rates. Primary venue for ratemaking proceedings.", "citation": ""}, {"source": "puc", "target": "interconnection", "type": "regulation", "description": "State PUCs handle distribution-level interconnection (FERC handles transmission-level).", "citation": ""}, {"source": "nerc", "target": "iso", "type": "regulation", "description": "NERC reliability standards constrain ISO operations (e.g., BAL standards on balancing authority performance).", "citation": ""}, {"source": "nerc", "target": "to", "type": "regulation", "description": "NERC reliability standards constrain TO planning and operations (e.g., TPL planning standards).", "citation": ""}, {"source": "nerc", "target": "participants", "type": "regulation", "description": "NERC standards apply to generator owners, balancing authorities, transmission operators.", "citation": ""}, {"source": "legislature", "target": "puc", "type": "regulation", "description": "State legislatures set the statutory framework PUCs operate within. RPS, clean energy mandates, ratemaking principles.", "citation": ""}, {"source": "legislature", "target": "participants", "type": "regulation", "description": "State policies (RPS, carbon pricing, retail competition rules) directly bind LSEs and other participants.", "citation": ""}, {"source": "legislature", "target": "rates", "type": "regulation", "description": "State legislatures set policies that flow through to retail rate design (e.g., decoupling, time-of-use mandates).", "citation": ""}, {"source": "iso", "target": "dam", "type": "regulation", "description": "ISO operates DAM and sets implementation rules within the FERC-approved tariff.", "citation": ""}, {"source": "iso", "target": "rtm", "type": "regulation", "description": "ISO operates RTM and dispatches in real-time.", "citation": ""}, {"source": "iso", "target": "as", "type": "regulation", "description": "ISO operates AS markets, sets product specifications and procurement quantities.", "citation": ""}, {"source": "iso", "target": "capacity", "type": "regulation", "description": "ISO runs capacity auction, sets accreditation rules, demand curves, locational constraints.", "citation": ""}, {"source": "iso", "target": "ftr", "type": "regulation", "description": "ISO runs FTR auction, performs SFT, defines feasibility region.", "citation": ""}, {"source": "iso", "target": "arr", "type": "regulation", "description": "ISO administers ARR allocation per tariff formula.", "citation": ""}, {"source": "iso", "target": "interconnection", "type": "regulation", "description": "ISO runs interconnection studies, sets queue rules, allocates network upgrade costs.", "citation": ""}, {"source": "iso", "target": "dam", "type": "information", "description": "ISO supplies network model, constraint set, loss factors, contingency list to DAM clearing optimization (SCUC).", "citation": ""}, {"source": "iso", "target": "rtm", "type": "information", "description": "ISO supplies network model and real-time state estimation to RTM clearing (SCED).", "citation": ""}, {"source": "iso", "target": "ftr", "type": "information", "description": "ISO supplies network model to FTR auction clearing (SFT). Modeling choices here drive revenue adequacy.", "citation": ""}, {"source": "iso", "target": "capacity", "type": "information", "description": "ISO supplies capacity accreditation values (ELCC, etc.) and locational deliverability constraints.", "citation": ""}, {"source": "iso", "target": "participants", "type": "information", "description": "ISO publishes prices, dispatch instructions, settlement statements, market notices.", "citation": ""}, {"source": "iso", "target": "ferc", "type": "information", "description": "ISO reports market outcomes, performance metrics, and proposed tariff changes.", "citation": ""}, {"source": "participants", "target": "dam", "type": "action", "description": "Generators submit offers; LSEs submit demand bids; virtual bidders submit incs/decs. Defines the auction's input.", "citation": ""}, {"source": "participants", "target": "rtm", "type": "action", "description": "Generators update offers and follow dispatch; loads can self-schedule or respond to prices.", "citation": ""}, {"source": "participants", "target": "as", "type": "action", "description": "Resources offer AS capability into co-optimized energy/AS clearing.", "citation": ""}, {"source": "participants", "target": "capacity", "type": "action", "description": "Generators (and increasingly storage, DR, demand-side resources) offer capacity supply obligations into the auction.", "citation": ""}, {"source": "participants", "target": "ftr", "type": "action", "description": "Traders, LSEs, generators bid on path-based congestion rights.", "citation": ""}, {"source": "participants", "target": "arr", "type": "action", "description": "LSEs nominate ARRs and choose to take cash or self-convert to FTRs.", "citation": ""}, {"source": "participants", "target": "bilateral", "type": "action", "description": "Counterparties negotiate and execute PPAs, tolling, OTC swaps. Generators and LSEs are the primary actors here.", "citation": ""}, {"source": "participants", "target": "interconnection", "type": "action", "description": "Generators submit interconnection applications, fund studies, negotiate LGIAs.", "citation": ""}, {"source": "participants", "target": "rates", "type": "action", "description": "LSEs file proposed retail tariffs with PUCs; TOs file rate cases with FERC.", "citation": ""}, {"source": "customers", "target": "rates", "type": "action", "description": "End customers pay retail bills; large customers may participate in rate cases or negotiate special tariffs.", "citation": ""}, {"source": "customers", "target": "rtm", "type": "action", "description": "Through DR programs or wholesale-passthrough rates, customers' consumption decisions interact with real-time prices.", "citation": ""}, {"source": "participants", "target": "iso", "type": "money", "description": "Buyers pay the ISO for cleared positions: load pays for DAM energy, capacity charges, AS uplift, ARR funding shortfalls; auction buyers pay for FTR positions. ISO acts as central counterparty.", "citation": ""}, {"source": "iso", "target": "participants", "type": "money", "description": "ISO pays sellers from collected market revenues: generators receive DAM/RTM/AS clearing payments and capacity revenues; FTR holders receive congestion settlements; LSEs receive ARR cash distributions.", "citation": ""}, {"source": "dam", "target": "iso", "type": "information", "description": "DAM clearing produces LMPs and cleared positions. These outputs flow back to the ISO, which uses them as the basis for settlement and as inputs to RTM, FTR settlement, and downstream processes.", "citation": ""}, {"source": "rtm", "target": "iso", "type": "information", "description": "RTM clearing produces 5-minute LMPs and dispatch quantities used by the ISO for imbalance settlement.", "citation": ""}, {"source": "as", "target": "iso", "type": "information", "description": "AS clearing prices and awarded quantities flow back to the ISO for settlement and dispatch.", "citation": ""}, {"source": "capacity", "target": "iso", "type": "information", "description": "Capacity auction results (clearing prices, cleared positions) flow back to the ISO for billing and obligation tracking.", "citation": ""}, {"source": "ftr", "target": "iso", "type": "information", "description": "FTR auction results (cleared positions, clearing prices) flow to the ISO, which collects auction revenue and uses cleared positions to settle against DAM congestion.", "citation": ""}, {"source": "bilateral", "target": "participants", "type": "money", "description": "Bilateral contracts settle directly between counterparties (PPAs, tolling, OTC swaps). Not through the ISO.", "citation": ""}, {"source": "customers", "target": "participants", "type": "money", "description": "End customers pay retail bills to LSEs (or other competitive retailers). The LSE then settles its wholesale obligations from this revenue.", "citation": ""}, {"source": "rates", "target": "customers", "type": "money", "description": "Retail tariffs determine what end customers pay; OATT and revenue requirements flow through to retail rates.", "citation": ""}, {"source": "rates", "target": "to", "type": "money", "description": "OATT and revenue requirement collections (administered by the ISO) flow to TOs as cost-of-service compensation.", "citation": ""}, {"source": "participants", "target": "rates", "type": "money", "description": "Generators and LSEs pay OATT charges; LSEs pay transmission revenue requirement passthroughs. Often administered as ISO uplift but conceptually owed under the rate structure.", "citation": ""}, {"source": "participants", "target": "interconnection", "type": "money", "description": "Generators pay interconnection study costs and network upgrade costs per cost allocation rules.", "citation": ""}, {"source": "ftr", "target": "arr", "type": "money", "description": "FTR auction revenues collected by the ISO are allocated to ARR holders per the tariff formula. Conceptually the FTR auction funds the ARR pool, though both flows pass through the ISO.", "citation": ""}, {"source": "arr", "target": "rates", "type": "money", "description": "ARR cash received by LSEs typically flows through to retail customers as a credit to congestion-related costs.", "citation": ""}, {"source": "dam", "target": "rtm", "type": "information", "description": "DAM positions are the financial baseline; RTM settles deviations against DAM. Virtual bidders arbitrage the seam.", "citation": ""}, {"source": "dam", "target": "ftr", "type": "money", "description": "FTRs settle against DAM congestion. DAM congestion rents (collected by the ISO from load) are the funding source for FTR payouts \u2014 when these don't fund FTRs in full, revenue inadequacy results.", "citation": ""}, {"source": "dam", "target": "bilateral", "type": "information", "description": "DAM LMPs are the reference prices most PPAs, swaps, and futures settle against.", "citation": ""}, {"source": "capacity", "target": "dam", "type": "regulation", "description": "Must-offer obligations from capacity market constrain how cleared capacity must bid into DAM.", "citation": ""}, {"source": "interconnection", "target": "capacity", "type": "regulation", "description": "Interconnection status (and capacity accreditation rules) determine eligibility to participate in capacity market.", "citation": ""}, {"source": "interconnection", "target": "dam", "type": "regulation", "description": "Interconnection status determines a resource's eligibility to participate in energy markets and the network model it enters.", "citation": ""}, {"source": "to", "target": "interconnection", "type": "action", "description": "TO conducts interconnection studies (jointly with ISO), constructs network upgrades, executes LGIAs.", "citation": ""}, {"source": "to", "target": "iso", "type": "information", "description": "TO provides network topology, equipment ratings, outage schedules to ISO for use in market clearing models.", "citation": ""}, {"source": "to", "target": "rates", "type": "action", "description": "TO files rate cases with FERC to recover capital and operating costs.", "citation": ""}, {"source": "dam", "target": "as", "type": "information", "description": "Energy and AS are co-optimized; AS clearing prices reflect the opportunity cost of providing reserves vs. energy.", "citation": ""}, {"source": "rtm", "target": "as", "type": "information", "description": "Real-time energy and AS are co-optimized; AS deployment occurs in real-time.", "citation": ""}, {"source": "rtm", "target": "arr", "type": "information", "description": "Historical load data from RTM settlements feeds the ARR allocation formula.", "citation": ""}, {"source": "rates", "target": "arr", "type": "information", "description": "Transmission cost allocation under OATT feeds the ARR allocation formula.", "citation": ""}, {"source": "participants", "target": "ferc", "type": "action", "description": "Participants file complaints, intervene in proceedings, request tariff changes.", "citation": ""}, {"source": "participants", "target": "puc", "type": "action", "description": "LSEs, customers, and other parties intervene in PUC rate cases and policy proceedings.", "citation": ""}, {"source": "bilateral", "target": "dam", "type": "information", "description": "Forward DAM curves (implied from bilateral PPA/futures prices) inform DAM bidding.", "citation": ""}, {"source": "capacity", "target": "bilateral", "type": "information", "description": "Capacity clearing prices and expected energy revenues affect PPA willingness-to-pay (the 'missing money' debate).", "citation": ""}]};
+
+// === SETUP ===
+const nodes = GRAPH_DATA.nodes;
+const edges = GRAPH_DATA.edges;
+const nodeById = Object.fromEntries(nodes.map(n => [n.id, n]));
+
+// Populate counts
+const edgeCounts = { action: 0, money: 0, regulation: 0, information: 0 };
+edges.forEach(e => edgeCounts[e.type]++);
+Object.entries(edgeCounts).forEach(([t, c]) => {
+  document.getElementById('count-' + t).textContent = c;
+});
+document.getElementById('count-actor').textContent = nodes.filter(n => n.category === 'actor').length;
+document.getElementById('count-market').textContent = nodes.filter(n => n.category === 'market').length;
+
+// Cytoscape elements
+const cyElements = [
+  ...nodes.map(n => ({
+    data: { id: n.id, label: n.name, category: n.category, description: n.description }
+  })),
+  ...edges.map((e, i) => ({
+    data: {
+      id: 'e' + i,
+      source: e.source,
+      target: e.target,
+      type: e.type,
+      description: e.description
+    }
+  }))
+];
+
+const TYPE_COLORS = {
+  action: '#2e5f3e',
+  money: '#8a3324',
+  regulation: '#4a3a6a',
+  information: '#7a6a3a'
+};
+
+const cy = cytoscape({
+  container: document.getElementById('cy'),
+  elements: cyElements,
+  style: [
+    {
+      selector: 'node',
+      style: {
+        'background-color': ele => ele.data('category') === 'actor' ? '#1f3a5f' : '#5a4a2a',
+        'shape': ele => ele.data('category') === 'actor' ? 'ellipse' : 'round-rectangle',
+        'width': 60,
+        'height': 50,
+        'label': 'data(label)',
+        'color': '#1a1814',
+        'font-family': 'Inter Tight, sans-serif',
+        'font-size': '12px',
+        'font-weight': 500,
+        'text-valign': 'bottom',
+        'text-margin-y': 6,
+        'text-wrap': 'wrap',
+        'text-max-width': '110px',
+        'border-width': 1.5,
+        'border-color': '#1a1814',
+        'transition-property': 'opacity, border-width, background-color',
+        'transition-duration': '150ms'
+      }
+    },
+    {
+      selector: 'node:selected',
+      style: {
+        'border-width': 3,
+        'border-color': '#8a3324'
+      }
+    },
+    {
+      selector: 'edge',
+      style: {
+        'width': 1.5,
+        'line-color': ele => TYPE_COLORS[ele.data('type')],
+        'target-arrow-color': ele => TYPE_COLORS[ele.data('type')],
+        'target-arrow-shape': 'triangle',
+        'arrow-scale': 0.9,
+        'curve-style': 'bezier',
+        'opacity': 0.55,
+        'line-style': ele => ele.data('type') === 'information' ? 'dashed' : 'solid',
+        'transition-property': 'opacity, width',
+        'transition-duration': '150ms'
+      }
+    },
+    {
+      selector: '.faded',
+      style: { 'opacity': 0.08 }
+    },
+    {
+      selector: '.highlighted',
+      style: {
+        'opacity': 1,
+        'width': 2.5,
+        'z-index': 10
+      }
+    },
+    {
+      selector: 'node.highlighted',
+      style: {
+        'border-width': 2.5,
+        'width': 60,
+        'height': 50
+      }
+    },
+    {
+      selector: 'edge.hidden',
+      style: { 'display': 'none' }
+    },
+    {
+      selector: 'node.dim',
+      style: { 'opacity': 0.25 }
+    }
+  ],
+  layout: { name: 'fcose', animate: false, padding: 50, nodeRepulsion: 8000, idealEdgeLength: 120, edgeElasticity: 0.45 },
+  wheelSensitivity: 0.2,
+  minZoom: 0.3,
+  maxZoom: 3
+});
+
+// === INTERACTIONS ===
+
+// Layout switcher
+document.querySelectorAll('.layout-select button').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.layout-select button').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    const layoutName = btn.dataset.layout;
+    let opts;
+    if (layoutName === 'fcose') {
+      opts = { name: 'fcose', animate: true, animationDuration: 500, padding: 50, nodeRepulsion: 8000, idealEdgeLength: 120, edgeElasticity: 0.45 };
+    } else if (layoutName === 'concentric') {
+      opts = {
+        name: 'concentric',
+        animate: true,
+        animationDuration: 500,
+        padding: 50,
+        concentric: n => n.data('category') === 'actor' ? 2 : 1,
+        levelWidth: () => 1,
+        minNodeSpacing: 50
+      };
+    } else if (layoutName === 'circle') {
+      opts = { name: 'circle', animate: true, animationDuration: 500, padding: 50 };
+    }
+    cy.layout(opts).run();
+  });
+});
+
+// Edge type filtering
+document.querySelectorAll('#edge-filters input').forEach(input => {
+  input.addEventListener('change', () => {
+    const type = input.dataset.type;
+    cy.edges(`[type = "${type}"]`).toggleClass('hidden', !input.checked);
+  });
+});
+
+// Search
+document.getElementById('search').addEventListener('input', (e) => {
+  const q = e.target.value.toLowerCase().trim();
+  if (!q) {
+    cy.nodes().removeClass('dim');
+    return;
+  }
+  cy.nodes().forEach(n => {
+    const match = n.data('label').toLowerCase().includes(q) || n.data('description').toLowerCase().includes(q);
+    n.toggleClass('dim', !match);
+  });
+});
+
+// Node selection → detail panel + highlighting
+function renderDetail(node) {
+  const data = node.data();
+  const incidentEdges = cy.edges().filter(e => e.source().id() === data.id || e.target().id() === data.id);
+
+  const incoming = [];
+  const outgoing = [];
+  incidentEdges.forEach(e => {
+    const ed = e.data();
+    if (ed.source === data.id) {
+      outgoing.push({ other: nodeById[ed.target], type: ed.type, desc: ed.description, dir: 'out' });
+    } else {
+      incoming.push({ other: nodeById[ed.source], type: ed.type, desc: ed.description, dir: 'in' });
+    }
+  });
+
+  // Sort by type for readability
+  const order = { action: 0, money: 1, regulation: 2, information: 3 };
+  outgoing.sort((a, b) => order[a.type] - order[b.type]);
+  incoming.sort((a, b) => order[a.type] - order[b.type]);
+
+  const renderEdge = (e) => `
+    <div class="edge-item">
+      <div class="edge-header">
+        <span class="type-tag ${e.type}">${e.type}</span>
+        <span class="arrow">${e.dir === 'out' ? '→' : '←'}</span>
+        <span class="other-node">${e.other.name}</span>
+      </div>
+      <div class="edge-desc">${e.desc}</div>
+    </div>
+  `;
+
+  document.getElementById('detail').innerHTML = `
+    <h3>${data.label}</h3>
+    <div class="category-tag">${data.category}</div>
+    <div class="description">${data.description}</div>
+    ${outgoing.length ? `<h4>Outgoing (${outgoing.length})</h4>${outgoing.map(renderEdge).join('')}` : ''}
+    ${incoming.length ? `<h4>Incoming (${incoming.length})</h4>${incoming.map(renderEdge).join('')}` : ''}
+  `;
+}
+
+cy.on('tap', 'node', (evt) => {
+  const node = evt.target;
+  // Highlight neighborhood
+  cy.elements().removeClass('highlighted faded');
+  const neighborhood = node.closedNeighborhood();
+  cy.elements().not(neighborhood).addClass('faded');
+  neighborhood.addClass('highlighted');
+  renderDetail(node);
+});
+
+cy.on('tap', (evt) => {
+  if (evt.target === cy) {
+    cy.elements().removeClass('highlighted faded');
+    document.getElementById('detail').innerHTML = '<div class="empty">Select a node to see its description and incident edges.</div>';
+  }
+});
+</script>
+</body>
+</html>
