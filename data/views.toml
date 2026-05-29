@@ -71,7 +71,7 @@ The RTM is the real-time energy market — it dispatches the actual MW that flow
 """
 
 [ftr-runs]
-name = "How the FTR auction (and ARR) runs"
+name = "How the FTR auction runs"
 default_edge_types = ["action", "information", "money"]
 layout = "concentric"
 focus = "ftr"
