@@ -1,0 +1,34 @@
+# Views: curated subgraphs with narrative.
+#
+# Each [view-id] table defines one view. The members of the view are determined
+# by the `views` column on nodes.csv (and optionally edges.csv). The fields
+# below carry the view's metadata.
+
+[lse-pays]
+name = "How an LSE's bill is built"
+default_edge_types = ["money", "action", "information"]
+layout = "fcose"
+focus = "lses"
+narrative = """
+The LSE sits between two regulated price domains: retail tariffs (sticky, PUC-approved, customer-facing) and wholesale procurement (volatile, ISO-cleared or bilateral). Its job is to convert a stable retail revenue stream into the actual wholesale purchases that serve load. Every component of an LSE's bill traces to that conversion.
+
+**1. Energy procurement.** The LSE buys energy three ways. Long-dated bilateral PPAs — often RPS-compliant — settle directly against the generator at a strike price referenced to DAM LMPs (`lses → generators` money; `dam → bilateral` information for the LMP reference). Day-ahead clearing buys the residual at LMP (`lses → iso` money, DAM share). Real-time clearing settles any imbalance against the LSE's DAM position at RTM LMPs (RTM share of the same money edge).
+
+**2. Capacity.** Where a capacity market exists (PJM RPM, ISO-NE FCM, NYISO ICAP, MISO PRA), LSEs owe a capacity charge based on their load-share contribution to the system peak forecast. Charge × clearing price flows via `lses → iso` (money). Capacity revenues also shape bilateral PPA pricing — `capacity → bilateral` (information) carries the missing-money signal.
+
+**3. Transmission service (OATT).** The largest cross-ISO variation lives here. Transmission revenue requirement is recovered through OATT charges allocated to LSEs based on their load *coincident with system peaks*:
+
+- ERCOT uses **4CP** — average load during the four highest summer system peaks (June–September), one per month.
+- PJM uses **5CP** — the five highest system peaks across the year.
+- NYISO and ISO-NE use variants of network service peak load (NSPL) and peak load contribution (PLC).
+
+The mechanism is the same — `lses → iso` (money, OATT uplift share) — but the *allocation method* sharpens the incentive to curtail during expected peaks (the famous "4CP economics" in ERCOT). OATT collections then remit via `iso → to` (money) to the transmission owner.
+
+**4. Congestion offset (ARR/FTR).** LSEs are partially compensated for the cost of congestion that's locked into their load patterns. The mechanism is administrative: each LSE nominates ARRs (`lses → arr` action) based on its qualifying load history. The ISO runs the FTR auction; auction revenue feeds the ARR pool (`ftr → arr` information). ARR cash distributions flow back to LSEs (`iso → lses` money). LSEs may also self-convert ARRs into FTRs (`lses → ftr` action) when they want a position-based hedge rather than cash.
+
+**5. Retail passthrough.** The net wholesale obligation — energy + capacity + transmission + ARR credit + ancillaries — passes through to retail customers via PUC-approved tariffs (`retail → customers` information; `customers → lses` money). Retail tariffs are sticky, so any uncovered volatility lands on the LSE's balance sheet or is recovered through deferred-cost mechanisms.
+
+**What this view leaves out.** Regulation edges (FERC, PUC, NERC, legislature) are hidden — they govern the rules but don't appear in the cost arithmetic. Ancillary services (AS) are folded into the energy/uplift narrative for clarity. The action edges from generators or traders into wholesale markets are not in scope; the view is the LSE's side of the ledger.
+
+**Where the contested questions live.** Capacity-bilateral interactions (`capacity → bilateral`) carry the missing-money debate. The OATT allocation method is the levered policy choice for transmission cost — and an increasing share of LSEs' bills as transmission expands. ARR adequacy (whether FTR auction revenue actually funds the nominated ARRs) determines whether the congestion offset is real or notional.
+"""
