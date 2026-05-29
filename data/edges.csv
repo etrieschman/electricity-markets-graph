@@ -84,7 +84,7 @@ capacity,iso,information,"Capacity auction results (clearing prices, cleared pos
 ftr,iso,information,"FTR auction results (cleared positions, clearing prices) flow to the ISO, which collects auction revenue and uses cleared positions to settle against DAM congestion.",,
 arr,iso,information,"ARR allocation outputs (ARR awards by LSE and path) flow to the ISO, which uses them to disburse ARR cash and to determine self-conversion eligibility in the FTR auction.",,
 interconnection,iso,information,"Interconnection outputs (queue position, study results, signed LGIAs, network upgrade plans) flow to the ISO and update the resource model used by DAM/RTM/capacity.",,
-dam,rtm,information,DAM positions are the financial baseline; RTM settles deviations against DAM. Virtual bidders arbitrage the seam.,,dam-runs
+dam,rtm,information,"DAM unit commitment — which generators are committed for each hour, including minimum runs and ramp schedules — is the binding input to RTM dispatch. RTM (SCED) optimizes 5-min dispatch within the DAM-committed envelope; it cannot generally re-commit units in real time.",,dam-runs
 dam,as,information,Energy and AS are co-optimized; AS clearing prices reflect the opportunity cost of providing reserves vs. energy.,,
 rtm,as,information,Real-time energy and AS are co-optimized; AS deployment occurs in real-time.,,
 rtm,arr,information,Historical load data from RTM settlements feeds the ARR allocation formula.,,
