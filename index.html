@@ -843,10 +843,12 @@ function renderDetail(node) {
   document.querySelectorAll('#edge-filters input').forEach(input => {
     if (input.checked) activeTypes.add(input.dataset.type);
   });
-  // Also respect subcategory filters — hide edges to hidden nodes
+  // Also respect view filter and subcategory filter — selection mirrors
+  // what's actually visible in the graph.
   const incidentEdges = cy.edges().filter(e => {
     if (e.source().id() !== data.id && e.target().id() !== data.id) return false;
     if (!activeTypes.has(e.data('type'))) return false;
+    if (e.hasClass('out-of-view')) return false;
     // Skip if the other end is a hidden node
     const other = e.source().id() === data.id ? e.target() : e.source();
     if (other.hasClass('hidden')) return false;
