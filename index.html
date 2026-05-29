@@ -2,10 +2,10 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Electricity Markets — Framework Graph</title>
+<title>How U.S. Electricity Markets Work</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=JetBrains+Mono:wght@400;500&family=Inter+Tight:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Inter+Tight:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://unpkg.com/cytoscape@3.28.1/dist/cytoscape.min.js"></script>
 <script src="https://unpkg.com/layout-base/layout-base.js"></script>
 <script src="https://unpkg.com/cose-base/cose-base.js"></script>
@@ -58,17 +58,18 @@ header {
 }
 
 header h1 {
-  font-family: 'Fraunces', Georgia, serif;
-  font-weight: 500;
-  font-size: 19px;
+  font-family: 'Inter Tight', sans-serif;
+  font-weight: 600;
+  font-size: 17px;
   letter-spacing: -0.01em;
-  font-variation-settings: "opsz" 30;
 }
 
-header h1 em {
-  font-style: italic;
-  color: var(--accent);
+header .tagline {
+  font-family: 'Inter Tight', sans-serif;
   font-weight: 400;
+  font-size: 12px;
+  color: var(--ink-soft);
+  margin-top: 1px;
 }
 
 header .meta {
@@ -93,8 +94,8 @@ aside.right { border-left: 1px solid var(--rule); }
 }
 
 .section h2 {
-  font-family: 'Fraunces', Georgia, serif;
-  font-weight: 500;
+  font-family: 'Inter Tight', sans-serif;
+  font-weight: 600;
   font-size: 13px;
   letter-spacing: 0.02em;
   text-transform: uppercase;
@@ -357,19 +358,17 @@ aside.right { border-left: 1px solid var(--rule); }
 
 .detail-panel .empty {
   color: var(--ink-soft);
-  font-style: italic;
-  font-family: 'Fraunces', Georgia, serif;
+  font-family: 'Inter Tight', sans-serif;
   font-weight: 400;
-  font-size: 14px;
+  font-size: 13px;
 }
 
 .detail-panel h3 {
-  font-family: 'Fraunces', Georgia, serif;
-  font-weight: 500;
-  font-size: 22px;
+  font-family: 'Inter Tight', sans-serif;
+  font-weight: 700;
+  font-size: 20px;
   letter-spacing: -0.01em;
   margin-bottom: 4px;
-  font-variation-settings: "opsz" 30;
 }
 
 .detail-panel .category-tag {
@@ -457,8 +456,11 @@ footer {
 <body>
 
 <header>
-  <h1>Electricity Market Structure </h1>
-  <div class="meta">v0.1 · 20 nodes · 98 edges</div>
+  <div>
+    <h1>How U.S. Electricity Markets Work</h1>
+    <div class="tagline">A learning tool for the inner workings of U.S. wholesale electricity markets.</div>
+  </div>
+  <div class="meta">v1.0 · 20 nodes · 98 edges</div>
 </header>
 
 <aside class="left">

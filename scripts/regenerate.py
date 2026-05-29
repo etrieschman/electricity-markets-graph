@@ -140,7 +140,7 @@ def main():
     )
     html = re.sub(
         r'v\d+\.\d+ · \d+ nodes · \d+ edges',
-        f"v0.1 · {len(data['nodes'])} nodes · {len(data['edges'])} edges",
+        f"v1.0 · {len(data['nodes'])} nodes · {len(data['edges'])} edges",
         html
     )
     HTML.write_text(html)
