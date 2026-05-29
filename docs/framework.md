@@ -10,26 +10,37 @@ The graph is the *reference object*. Specific topics (FTR design, capacity adequ
 
 ## Nodes
 
-### Two types
+### Two categories, six subcategories
 
-- **Actor** — an institutional entity that makes decisions. Currently: ISO/RTO, transmission owner, **generators** (physical suppliers: gen firms, IPPs, storage, hybrid), **LSEs** (load-serving entities: utilities, retailers, munis, co-ops), **financial traders** (virtual bidders, FTR-only traders, marketers without physical assets), end customers, FERC, state PUCs, NERC, state legislatures.
-- **Market** — a recurring or standing arrangement where transactions clear. Markets span a *liquidity gradient*:
-  - **Centrally-cleared ISO auctions:** FTR, DAM, AS, RTM, capacity
-  - **Administratively assigned:** ARR allocation (a formula, not an auction)
-  - **Administratively set:** retail tariffs, OATT, transmission revenue requirement, RMR contracts (collapsed into one `rates` node at the top level)
+Each node has a **category** (`actor` or `mechanism`) and a **subcategory** that refines it.
+
+**Actor** — an institutional entity that makes decisions. Three subcategories:
+
+- **Regulator** — sets rules with statutory authority. `ferc`, `puc`, `nerc`, `legislature`.
+- **Operator** — institutional intermediary that runs markets or owns transmission assets, but doesn't take positions and isn't a principal regulator. `iso`, `to`.
+- **Participant** — buys, sells, hedges, or consumes. `generators`, `lses`, `traders`, `customers`.
+
+**Mechanism** — a recurring or standing arrangement that determines transactions. Three subcategories spanning the *liquidity gradient*:
+
+- **Market** — transactions clear, whether by central auction or OTC negotiation. `dam`, `rtm`, `as`, `capacity`, `ftr`, `bilateral`.
+- **Tariff** — administratively-set price schedule. No clearing; the rate structure determines what counterparties owe. `oatt` (FERC-regulated, payable by transmission users, remitted to TOs), `retail` (PUC-regulated, payable by customers, collected by LSEs).
+- **Process** — recurring multi-step administrative procedure that produces assignments or eligibility. `interconnection` (queue and study), `arr` (allocation formula).
+
+The earlier graph used a binary `actor` / `market` typing and called OATT, retail, and ARR "markets" — a stretch since none of them clear with bids and offers. The current taxonomy fixes that without losing structural content.
 
 - **Notes on this decision**
-  - **Generators / LSEs / traders are split because they have genuinely different edge profiles.** Generators are the only actors with interconnection, NERC GO/GOP, capacity supply, and AS supply edges. LSEs are the only ones with ARR nomination, retail-customer money inflows, PUC regulation, and RPS obligations. Traders have only DAM/RTM/FTR financial positions — no interconnection, no NERC, no capacity, no retail. Collapsing them hides edges the framework needs to express.
-  - **Bilateral / OTC is not a market node.** PPAs, tolling, OTC swaps could be modeled as a clearing arrangement, but they don't clear in the ISO sense (no central counterparty, no auction). Each contract is a direct actor-to-actor relationship. They are represented as direct edges — `lses → generators` (money) for PPA settlement and `generators → lses` (action) for negotiation. DAM LMPs as the settlement reference and capacity revenues as a WTP driver are folded into those edge descriptions.
+  - **Generators / LSEs / traders are split because they have genuinely different edge profiles.** Generators are the only actors with interconnection, NERC GO/GOP, capacity supply, and AS supply edges. LSEs are the only ones with ARR nomination, retail-customer money inflows, PUC regulation, and RPS obligations. Traders have only DAM/RTM/FTR/bilateral financial positions — no interconnection, no NERC, no capacity, no retail. Collapsing them hides edges the framework needs to express.
+  - **Bilateral / OTC is a market node.** Earlier versions of the graph treated bilateral contracts as direct actor-to-actor edges, on the reasoning that they don't clear centrally. The current view is that they belong on the liquidity gradient between cleared auctions and administrative rates: PPAs, tolling, bilateral RA, and financial CFDs are recurring arrangements with standardized settlement references (DAM LMPs as the energy benchmark) even though no single counterparty clears them. Without a `bilateral` node, the link between capacity revenues and PPA willingness-to-pay — the missing-money story — has nowhere to live except as prose in an edge description. PPA settlement money still flows actor-to-actor (`lses → generators`), per the money-edge rule below.
+  - **OATT and retail are split because they have different regulators, payers, and recipients.** OATT is FERC-regulated, paid by transmission users (generators, LSEs, traders), and remitted to TOs. Retail tariffs are PUC-regulated, paid by customers, and collected by LSEs. They share no neighbors, so the compression rule keeps them apart.
   - **Regulatory constructs collapse into edges.** A FERC order is an action by FERC that modifies the rules governing some market or actor. NERC standards are constraints NERC imposes on ISOs, TOs, and generators. State RPS policies are obligations legislatures impose on LSEs. In every case, the "construct" is really *an actor exercising authority over another node*, which is exactly what a regulation edge is. Treating them as edges rather than nodes simplifies the graph without losing any structure.
-  - **Physical objects collapse into actor/market attributes.** Generators-as-firms are actors; generators-as-physical-equipment are an attribute of those actors. Lines and loads are attributes of TOs and customers respectively. The "physical reality" of the grid enters the graph through information edges (the ISO supplies a network model to DAM) and action edges (a TO operates a line). For a framework focused on market structure, this is sufficient — the physical layer is presupposed rather than represented.
+  - **Physical objects collapse into actor/mechanism attributes.** Generators-as-firms are actors; generators-as-physical-equipment are an attribute of those actors. Lines and loads are attributes of TOs and customers respectively. The "physical reality" of the grid enters the graph through information edges (the ISO supplies a network model to DAM) and action edges (a TO operates a line). For a framework focused on market structure, this is sufficient — the physical layer is presupposed rather than represented.
 
 ## Edges
 
 ### Four types
 - **Action** — an actor doing something. Examples: a generator submitting an offer into DAM, an LSE filing a rate case, FERC issuing an order, a customer paying a bill, a TO conducting an interconnection study.
 - **Money** — value flowing between nodes. Examples: load paying the ISO for cleared DAM energy, the ISO paying generators from collected revenues, customers paying retail bills, OATT collections flowing to TOs, FTR auction revenues funding ARR distributions.
-- **Regulation** — rules constraining behavior or determining how money amounts are set. Examples: FERC approving the ISO tariff, NERC reliability standards binding the ISO, state PUCs setting retail rates, must-offer obligations from the capacity market constraining DAM bidding.
+- **Regulation** — rules constraining behavior or determining how money amounts are set. Examples: FERC approving the ISO tariff, NERC reliability standards binding the ISO, state PUCs setting retail rates, must-offer obligations from the capacity market constraining DAM bidding. Two flavors coexist in the graph: **principal regulation** (a regulator with statutory authority sets the rules — `ferc → iso`, `puc → retail`) and **delegated operational rulemaking** (the ISO sets implementation rules within a FERC-approved tariff — `iso → dam`). Both are "rules constraining behavior" by the definition above, but the source of authority differs.
 - **Information** — data, models, forecasts, prices, telemetry flowing between nodes. Examples: the ISO supplying a network model to DAM clearing, RTM clearing results flowing back to the ISO for settlement, DAM LMPs being the reference price PPAs settle against, historical load data feeding the ARR allocation formula.
 
 ### Edges can exist between any pair of node types
@@ -42,9 +53,15 @@ Actor-market edges: the canonical ones — generators offering into DAM, LSEs bi
 
 ### The ISO as central counterparty
 
-In this framework, the ISO is the financial counterparty for all centrally-cleared market transactions. Generators don't get paid by "the DAM"; they get paid by the ISO, which collected from load. This is why the largest money flows in the graph run through the ISO — `lses → iso` and `traders → iso` (buyers paying) and `iso → generators`, `iso → lses`, `iso → traders` (sellers being paid). Markets connect to the ISO via information edges (clearing results flow to the ISO for settlement) rather than money edges.
+In this framework, the ISO is the financial counterparty for all centrally-cleared market transactions. Generators don't get paid by "the DAM"; they get paid by the ISO, which collected from load. This is why the largest money flows in the graph run through the ISO — `lses → iso` and `traders → iso` (buyers paying) and `iso → generators`, `iso → lses`, `iso → traders`, `iso → to` (sellers and TOs being paid). Markets connect to the ISO via information edges (clearing results flow to the ISO for settlement) rather than money edges.
 
-Bilateral PPAs (`lses → generators` money) and customer-to-LSE flows (`customers → lses` money) bypass the ISO, since the ISO isn't the counterparty there. This asymmetry — which transactions flow through the ISO vs. directly — is a real structural feature of the system.
+Bilateral PPAs (`lses → generators` money) and customer-to-LSE flows (`customers → lses` money) bypass the ISO, since the ISO isn't the counterparty there. Interconnection network upgrades (`generators → to` money) likewise flow directly. This asymmetry — which transactions flow through the ISO vs. directly — is a real structural feature of the system.
+
+### Money edges are actor-to-actor only
+
+A money edge represents value transferred between two balance sheets. A market is a price-and-quantity discovery mechanism, not a balance sheet — DAM doesn't hold money; the ISO does. So money edges in this graph always have an *actor* on each end. A market's role in determining how much money moves is captured by an information edge (clearing produces a price) or a regulation edge (a tariff sets a charge).
+
+This rule eliminates the temptation to draw `dam → ftr` (money) or `lses → oatt` (money). Both collapse into the cleaner pattern: `iso` is the counterparty, the market node carries the price signal via information, and the tariff governs via regulation. Where a flow appears to pass through a market (FTR auction revenue funding ARR distributions, for instance), the actual money lives in the ISO settlement system and the market-to-market edge becomes information (`ftr → arr` information: "FTR auction revenue is the funding source for ARR distributions").
 
 ## Design principles
 
@@ -55,20 +72,25 @@ Bilateral PPAs (`lses → generators` money) and customer-to-LSE flows (`custome
 This is the rule that determines node granularity. It explains:
 
 - Why DAM and RTM are separate nodes (the DAM→RTM seam is an information edge that disappears if you collapse them).
-- Why ARR allocation is a separate node from the FTR auction (ARR has edges to LSEs and retail tariffs that the FTR auction doesn't).
+- Why ARR allocation is a separate node from the FTR auction (ARR has edges to LSEs and retail that the FTR auction doesn't).
 - Why state PUCs and FERC are separate (different jurisdictions, different downstream edges).
 - Why generators, LSEs, and traders are separate actor nodes (their edge sets to markets, regulators, and each other diverge enough that collapsing them hides structure — most visibly in the FTR/ARR loop and the bilateral layer).
+- Why OATT and retail are separate nodes (different regulators, different payers, different recipients).
 - Why thermal and renewable generators are *not* split at the top level (their edges to markets are structurally similar; only attributes differ).
 
 ### Tiered detail
 
-The current graph is a *top-level* graph (18 nodes). Several nodes are candidates for expansion into sub-graphs at level 2:
+The current graph is a *top-level* graph (20 nodes). Several nodes are candidates for expansion into sub-graphs at level 2:
 
 - **Generators** → thermal, renewable, storage, hybrid, demand response (each with subtly different market eligibility and settlement rules)
 - **LSEs** → vertically integrated utilities, competitive retailers, munis & co-ops (different regulatory exposure and procurement patterns)
-- **Regulated Rates** → retail tariffs, OATT, transmission revenue requirement, RMR contracts
-- **DAM** → SCUC, RUC, virtual bidding, settlement
+- **Bilateral** → physical PPAs, tolling, bilateral RA, financial CFDs and basis swaps (different counterparty mixes and settlement structures)
+- **DAM** → SCUC, RUC, virtual bidding, settlement (also the natural home for the OPF / LMP decomposition details — energy, losses, congestion as dual variables on the network constraints)
+- **RTM** → SCED, ORDC and scarcity pricing, imbalance settlement
+- **OATT** → transmission service, transmission revenue requirement, RMR (FERC-jurisdictional flavors)
 - **End Customers** → residential, commercial, industrial, large flexible loads (data centers as a contested sub-category)
+- **Transmission planning** → a *new* level-2 candidate. Order 1000 regional planning is structurally similar to interconnection (recurring multi-stakeholder process with cost allocation rules) but is currently folded into `to → ferc` action and `iso → to` information edges. Worth splitting out if transmission cost allocation grows in salience.
+- **DR aggregator** → another level-2 candidate. Order 2222 mediation between customers and wholesale markets currently has no representation; the `customers → rtm` direct edge was removed as glossing this mediation.
 
 Expansion is not currently implemented in the visualization but is the natural next feature.
 

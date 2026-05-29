@@ -20,7 +20,11 @@ EDGES_CSV = REPO_ROOT / 'data' / 'edges.csv'
 HTML = REPO_ROOT / 'index.html'
 
 VALID_EDGE_TYPES = {'action', 'money', 'regulation', 'information'}
-VALID_CATEGORIES = {'actor', 'market'}
+VALID_CATEGORIES = {'actor', 'mechanism'}
+VALID_SUBCATEGORIES = {
+    'actor': {'regulator', 'operator', 'participant'},
+    'mechanism': {'market', 'tariff', 'process'},
+}
 
 
 def read_csvs():
@@ -54,6 +58,10 @@ def validate(data):
         seen_ids.add(n['id'])
         if n['category'] not in VALID_CATEGORIES:
             errors.append(f"Node {n['id']}: invalid category '{n['category']}' (must be one of {VALID_CATEGORIES})")
+            continue
+        sub = n.get('subcategory', '')
+        if sub not in VALID_SUBCATEGORIES[n['category']]:
+            errors.append(f"Node {n['id']}: invalid subcategory '{sub}' for category '{n['category']}' (must be one of {VALID_SUBCATEGORIES[n['category']]})")
 
     for i, e in enumerate(data['edges']):
         row_num = i + 2  # +2 for header row and 1-indexing
