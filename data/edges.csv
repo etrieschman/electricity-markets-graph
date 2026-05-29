@@ -34,13 +34,13 @@ capacity,dam,regulation,Must-offer obligations from capacity market constrain ho
 generators,dam,action,"Generators submit supply offers (energy curves, start/min-run constraints). Defines the supply side of SCUC.",,dam-runs
 lses,dam,action,LSEs submit demand bids (price-sensitive or self-scheduled) to procure next-day energy on behalf of load.,,dam-runs
 traders,dam,action,Virtual bidders submit financial increments and decrements to arbitrage the DAM-RTM seam; FTR traders may submit DAM bids tied to congestion positions.,,dam-runs
-generators,rtm,action,Generators follow ISO dispatch instructions and may update offers in real-time within tariff limits.,,dam-runs
-lses,rtm,action,LSEs self-schedule load and operate DR programs and wholesale-passthrough retail products on behalf of customers; settle imbalance against RTM LMPs.,,
-generators,as,action,"Generators (and storage, hybrid resources) offer reserve and regulation capability into co-optimized energy/AS clearing.",,
-generators,capacity,action,"Generators (and increasingly storage, hybrid resources) offer capacity supply obligations into the auction.",,
-traders,ftr,action,"Financial traders bid on path-based congestion rights, taking positions against expected DAM congestion patterns.",,
-lses,ftr,action,LSEs self-convert ARRs to FTRs or bid in the FTR auction to hedge congestion exposure on their load.,,
-lses,arr,action,LSEs nominate ARRs against their load-and-transmission-cost obligations and choose to take cash or self-convert to FTRs.,,
+generators,rtm,action,Generators follow ISO dispatch instructions and may update offers in real-time within tariff limits.,,"dam-runs,rtm-runs"
+lses,rtm,action,LSEs self-schedule load and operate DR programs and wholesale-passthrough retail products on behalf of customers; settle imbalance against RTM LMPs.,,rtm-runs
+generators,as,action,"Generators (and storage, hybrid resources) offer reserve and regulation capability into co-optimized energy/AS clearing.",,"dam-runs,rtm-runs"
+generators,capacity,action,"Generators (and increasingly storage, hybrid resources) offer capacity supply obligations into the auction.",,capacity-runs
+traders,ftr,action,"Financial traders bid on path-based congestion rights, taking positions against expected DAM congestion patterns.",,ftr-runs
+lses,ftr,action,LSEs self-convert ARRs to FTRs or bid in the FTR auction to hedge congestion exposure on their load.,,ftr-runs
+lses,arr,action,LSEs nominate ARRs against their load-and-transmission-cost obligations and choose to take cash or self-convert to FTRs.,,ftr-runs
 generators,interconnection,action,"Generators submit interconnection applications, fund studies, negotiate LGIAs and network upgrade cost allocation.",,
 customers,puc,action,"Consumer advocates and individual large customers intervene in PUC proceedings — rate cases, RPS dockets, large-load policy.",,
 customers,ferc,action,"Large customers (data center coalitions, industrial loads) and consumer advocates intervene at FERC on transmission cost allocation, interconnection rules (Order 2023), and large-load capacity treatment.",,
@@ -55,22 +55,22 @@ generators,bilateral,action,"Generators originate, negotiate, and execute bilate
 lses,bilateral,action,"LSEs procure bilateral supply: long-dated PPAs (often RPS-compliant), tolling, bilateral RA for capacity, and basis hedges. The primary hedge for retail load obligations beyond ISO product offerings.",,
 traders,bilateral,action,"Financial traders enter CFDs, basis swaps, heat-rate options, and other OTC instruments to take or offset risk positions without holding physical assets.",,
 generators,to,money,Generators pay network upgrade construction costs directly to TOs per interconnection cost allocation. Project-finance flow with no ongoing settlement.,,
-generators,iso,money,"Generators pay the ISO their net cleared-market obligations: storage/hybrid charging energy (DAM and RTM), capacity penalties for non-performance, interconnection study deposits, and other ISO-administered charges. The ISO is the legal counterparty for centrally-cleared transactions.",,dam-runs
+generators,iso,money,"Generators pay the ISO their net cleared-market obligations: storage/hybrid charging energy (DAM and RTM), capacity penalties for non-performance, interconnection study deposits, and other ISO-administered charges. The ISO is the legal counterparty for centrally-cleared transactions.",,"dam-runs,rtm-runs,capacity-runs"
 lses,bilateral,money,"LSE-side bilateral PPA payments — physical PPAs, tolling, bilateral RA. The principal long-dated hedge for retail load.",,
-lses,iso,money,"LSEs pay the ISO their net cleared-market obligations: DAM cleared energy at LMP_load, RTM imbalance buys, AS uplift, capacity charges (load-share of system peak — 4CP/5CP/NSPL by ISO), FTR auction buys, and OATT/transmission-service uplift. The single largest outflow on an LSE's balance sheet.",,dam-runs
-traders,iso,money,"Financial traders pay the ISO for buy-side FTR auction positions, net-negative virtual settlements (when increment/decrement positions clear unfavorably), and any revenue-inadequacy uplift assessments.",,dam-runs
+lses,iso,money,"LSEs pay the ISO their net cleared-market obligations: DAM cleared energy at LMP_load, RTM imbalance buys, AS uplift, capacity charges (load-share of system peak — 4CP/5CP/NSPL by ISO), FTR auction buys, and OATT/transmission-service uplift. The single largest outflow on an LSE's balance sheet.",,"dam-runs,rtm-runs,ftr-runs,capacity-runs"
+traders,iso,money,"Financial traders pay the ISO for buy-side FTR auction positions, net-negative virtual settlements (when increment/decrement positions clear unfavorably), and any revenue-inadequacy uplift assessments.",,"dam-runs,ftr-runs"
 customers,lses,money,End customers pay retail bills to LSEs under PUC-approved retail tariff structures. The retail tariff determines the amount; the cash flow is direct.,,
 customers,bilateral,money,"Large customers (corporate buyers, industrial loads) pay directly into bilateral PPAs and virtual PPAs.",,
-iso,generators,money,"ISO pays generators their net cleared-market revenues: DAM/RTM energy clearing at LMP_gen, AS awards, capacity revenues. The ISO collects from buyers across all cleared markets and pays sellers from the aggregate pool; congestion rent — the residual between LMP_load and LMP_gen at congested constraints — funds FTR settlement.",,dam-runs
-iso,lses,money,"ISO pays LSEs ARR cash distributions (per the ARR formula applied to FTR auction revenue), FTR settlements on LSE-held FTRs, RTM credits for DR and curtailment, and occasional uplift credits.",,dam-runs
-iso,traders,money,ISO pays traders FTR congestion settlements (when path positions align with realized DAM congestion) and net-positive virtual settlement revenues.,,dam-runs
+iso,generators,money,"ISO pays generators their net cleared-market revenues: DAM/RTM energy clearing at LMP_gen, AS awards, capacity revenues. The ISO collects from buyers across all cleared markets and pays sellers from the aggregate pool; congestion rent — the residual between LMP_load and LMP_gen at congested constraints — funds FTR settlement.",,"dam-runs,rtm-runs,capacity-runs"
+iso,lses,money,"ISO pays LSEs ARR cash distributions (per the ARR formula applied to FTR auction revenue), FTR settlements on LSE-held FTRs, RTM credits for DR and curtailment, and occasional uplift credits.",,"dam-runs,rtm-runs,ftr-runs"
+iso,traders,money,ISO pays traders FTR congestion settlements (when path positions align with realized DAM congestion) and net-positive virtual settlement revenues.,,"dam-runs,ftr-runs"
 iso,to,money,ISO remits OATT transmission revenue requirement collections to TOs as cost-of-service compensation.,,
 bilateral,generators,money,"Bilateral PPA settlements to generators — physical PPAs, tolling, bilateral RA. Settled financially against DAM LMPs; willingness-to-pay is shaped by capacity revenues (the missing-money debate).",,
 iso,dam,information,"ISO supplies network model, constraint set, loss factors, contingency list to DAM clearing optimization (SCUC).",,dam-runs
-iso,rtm,information,ISO supplies network model and real-time state estimation to RTM clearing (SCED).,,
-iso,ftr,information,ISO supplies network model to FTR auction clearing (SFT). Modeling choices here drive revenue adequacy.,,
-iso,capacity,information,"ISO supplies capacity accreditation values (ELCC, etc.) and locational deliverability constraints.",,
-iso,generators,information,"ISO publishes prices (LMPs, capacity clearing, AS prices), dispatch instructions, settlement statements, and market notices to generators.",,dam-runs
+iso,rtm,information,ISO supplies network model and real-time state estimation to RTM clearing (SCED).,,rtm-runs
+iso,ftr,information,ISO supplies network model to FTR auction clearing (SFT). Modeling choices here drive revenue adequacy.,,ftr-runs
+iso,capacity,information,"ISO supplies capacity accreditation values (ELCC, etc.) and locational deliverability constraints.",,capacity-runs
+iso,generators,information,"ISO publishes prices (LMPs, capacity clearing, AS prices), dispatch instructions, settlement statements, and market notices to generators.",,"dam-runs,rtm-runs"
 iso,lses,information,"ISO publishes prices, settlement statements, capacity obligations, and market notices to LSEs.",,
 iso,traders,information,"ISO publishes prices, FTR auction results, and settlement statements to financial traders.",,
 iso,to,information,"ISO sends outage approvals, dispatch coordination, and post-contingency operating instructions to TOs.",,
@@ -78,22 +78,22 @@ iso,ferc,information,"ISO reports market outcomes, performance metrics, and prop
 nerc,ferc,information,"NERC submits proposed reliability standards, compliance reports, and event analyses to FERC for approval and oversight.",,
 to,iso,information,"TO provides network topology, equipment ratings, outage schedules to ISO for use in market clearing models.",,
 dam,iso,information,"DAM clearing produces LMPs and cleared positions. These outputs flow back to the ISO, which uses them as the basis for settlement and as inputs to RTM, FTR settlement, and downstream processes.",,dam-runs
-rtm,iso,information,RTM clearing produces 5-minute LMPs and dispatch quantities used by the ISO for imbalance settlement.,,
+rtm,iso,information,RTM clearing produces 5-minute LMPs and dispatch quantities used by the ISO for imbalance settlement.,,rtm-runs
 as,iso,information,AS clearing prices and awarded quantities flow back to the ISO for settlement and dispatch.,,
-capacity,iso,information,"Capacity auction results (clearing prices, cleared positions) flow back to the ISO for billing and obligation tracking.",,
-ftr,iso,information,"FTR auction results (cleared positions, clearing prices) flow to the ISO, which collects auction revenue and uses cleared positions to settle against DAM congestion.",,
-arr,iso,information,"ARR allocation outputs (ARR awards by LSE and path) flow to the ISO, which uses them to disburse ARR cash and to determine self-conversion eligibility in the FTR auction.",,
+capacity,iso,information,"Capacity auction results (clearing prices, cleared positions) flow back to the ISO for billing and obligation tracking.",,capacity-runs
+ftr,iso,information,"FTR auction results (cleared positions, clearing prices) flow to the ISO, which collects auction revenue and uses cleared positions to settle against DAM congestion.",,ftr-runs
+arr,iso,information,"ARR allocation outputs (ARR awards by LSE and path) flow to the ISO, which uses them to disburse ARR cash and to determine self-conversion eligibility in the FTR auction.",,ftr-runs
 interconnection,iso,information,"Interconnection outputs (queue position, study results, signed LGIAs, network upgrade plans) flow to the ISO and update the resource model used by DAM/RTM/capacity.",,
-dam,rtm,information,"DAM unit commitment — which generators are committed for each hour, including minimum runs and ramp schedules — is the binding input to RTM dispatch. RTM (SCED) optimizes 5-min dispatch within the DAM-committed envelope; it cannot generally re-commit units in real time.",,dam-runs
-dam,as,information,Energy and AS are co-optimized; AS clearing prices reflect the opportunity cost of providing reserves vs. energy.,,
-rtm,as,information,Real-time energy and AS are co-optimized; AS deployment occurs in real-time.,,
-rtm,arr,information,Historical load data from RTM settlements feeds the ARR allocation formula.,,
-oatt,arr,information,Transmission cost allocation under OATT feeds the ARR allocation formula.,,
+dam,rtm,information,"DAM unit commitment — which generators are committed for each hour, including minimum runs and ramp schedules — is the binding input to RTM dispatch. RTM (SCED) optimizes 5-min dispatch within the DAM-committed envelope; it cannot generally re-commit units in real time.",,"dam-runs,rtm-runs"
+dam,as,information,Energy and AS are co-optimized; AS clearing prices reflect the opportunity cost of providing reserves vs. energy.,,dam-runs
+rtm,as,information,Real-time energy and AS are co-optimized; AS deployment occurs in real-time.,,rtm-runs
+rtm,arr,information,Historical load data from RTM settlements feeds the ARR allocation formula.,,ftr-runs
+oatt,arr,information,Transmission cost allocation under OATT feeds the ARR allocation formula.,,ftr-runs
 oatt,iso,information,"OATT tariff schedule determines the transmission charges the ISO collects from transmission users (generators, LSEs, traders) and remits to TOs. The mechanical price signal behind the OATT/TRR money flow.",,
-ftr,arr,information,"FTR auction revenue is the funding source for ARR allocation distributions. Both flows pass through the ISO, but the structural dependency is FTR-auction-revenue → ARR-pool.",,
-dam,ftr,information,DAM congestion clearing produces the congestion rents (collected by the ISO from load) that fund FTR settlements. Revenue inadequacy emerges when these rents don't fund cleared FTRs in full.,,dam-runs
+ftr,arr,information,"FTR auction revenue is the funding source for ARR allocation distributions. Both flows pass through the ISO, but the structural dependency is FTR-auction-revenue → ARR-pool.",,ftr-runs
+dam,ftr,information,DAM congestion clearing produces the congestion rents (collected by the ISO from load) that fund FTR settlements. Revenue inadequacy emerges when these rents don't fund cleared FTRs in full.,,"dam-runs,ftr-runs"
 dam,bilateral,information,"DAM LMPs are the standard settlement reference for most bilateral hedges, PPAs, and CFDs. The DAM-bilateral link is what makes the OTC layer financially coherent.",,dam-runs
-capacity,bilateral,information,Capacity market revenues shape bilateral PPA willingness-to-pay and the structure of capacity-inclusive vs energy-only contracts — the missing-money question lives in this edge.,,
+capacity,bilateral,information,Capacity market revenues shape bilateral PPA willingness-to-pay and the structure of capacity-inclusive vs energy-only contracts — the missing-money question lives in this edge.,,capacity-runs
 retail,customers,information,"Retail tariff structure determines what customers owe: passes through wholesale energy, capacity, transmission, ARR credits, and policy adders.",,
 puc,capacity,information,"State PUC actions — IRP outcomes, OOM (out-of-market) payments, state subsidies, retail-side resource preferences — create signals the capacity market design must accommodate. The MOPR debate lives in this edge.",,
 legislature,capacity,information,"State RPS targets, clean-resource mandates, and decarbonization goals drive capacity accreditation reforms (ELCC methodology fights, clean-resource carve-outs).",,
