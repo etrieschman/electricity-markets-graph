@@ -4,6 +4,76 @@
 # by the `views` column on nodes.csv (and optionally edges.csv). The fields
 # below carry the view's metadata.
 
+[iso-clearing]
+name = "The ISO as central counterparty"
+default_edge_types = ["money"]
+layout = "concentric"
+focus = "iso"
+narrative = """
+The ISO is the **central counterparty** for every centrally-cleared wholesale transaction. Buyers pay the market; the market aggregates settlement at the ISO; the ISO pays sellers. This view shows the clearing-house pattern — money flowing into the ISO from cleared markets and back out to participants — with bilateral and direct-payment flows visible as contrast.
+
+**Inflows.** Five cleared markets each aggregate settlement at the ISO:
+
+- **DAM** (energy): LSEs, traders, and storage-charging generators pay in (`lses/traders/generators → dam` money); DAM aggregates and remits to the ISO (`dam → iso` money). The difference between what loads pay and what generators are owed at congested nodes is congestion rent — the ISO holds this and routes it to FTR settlement.
+- **RTM** (imbalance): same pattern (`rtm → iso`).
+- **AS** (ancillary services): LSEs pay uplift, AS aggregates to ISO (`as → iso`).
+- **Capacity**: LSEs pay capacity charges, capacity aggregates to ISO (`capacity → iso`).
+- **FTR**: traders and LSEs pay auction buys; FTR aggregates auction revenue + settlement obligations to ISO (`ftr → iso`).
+
+Plus two direct charges to the ISO:
+
+- LSEs pay OATT/transmission-service charges and any FTR revenue-inadequacy uplift (`lses → iso` money). The OATT tariff sets the amount via `oatt → iso` information.
+- Generators pay interconnection study deposits, capacity-performance penalties, and other administered charges (`generators → iso` money).
+
+**Outflows.** Four destinations from the ISO:
+
+- `iso → generators` — energy clearing (DAM/RTM), AS awards, capacity revenues, paid out from cleared-market collections.
+- `iso → lses` — ARR cash distributions (per the ARR formula applied to FTR auction revenue), FTR settlements on LSE-held FTRs, RTM credits for DR/curtailment.
+- `iso → traders` — FTR congestion settlements and net-positive virtual settlement revenues.
+- `iso → to` — OATT/TRR remittance to TOs as cost-of-service compensation.
+
+**The balance identity.** Per settlement run, *sum(inflows) = sum(outflows) + reserves*. The ISO doesn't retain profits; it administers. The classic mechanical chain: LSEs pay `LMP_load × MW` into the DAM, the ISO collects, and pays generators `LMP_gen × MW`. The residual — `(LMP_load − LMP_gen) × flow` summed across congested constraints — is the congestion rent that funds FTR settlement. Revenue inadequacy occurs when congestion rent collected doesn't fully fund cleared FTRs.
+
+**What doesn't flow through the ISO.** Three categories of edges bypass the central-counterparty pattern:
+
+- `lses → bilateral → generators` (and `customers → bilateral → generators`) — bilateral PPAs have no central counterparty. The bilateral market is a *venue* with standardized DAM LMP settlement references, not a CCP.
+- `customers → lses` — retail bills flow direct under PUC-set retail tariffs. The retail tariff determines amounts (`retail → customers` information), but the cash flow is counterparty-to-counterparty.
+- `generators → to` — network upgrade construction payments are direct contracts under interconnection cost allocation. The ISO administers the *process* (interconnection studies, queue position) but not the *money*.
+
+The asymmetry is structural and intentional: centrally-cleared = ISO is the financial counterparty; bilateral/retail/direct = no central counterparty. Whether the bilateral layer should also clear through a CCP (as in some European markets) is an open design question.
+"""
+
+[dam-runs]
+name = "How the DAM runs"
+default_edge_types = ["action", "information", "money"]
+layout = "concentric"
+focus = "dam"
+narrative = """
+The DAM is the day-ahead energy market — it produces hourly LMPs and cleared schedules that serve as the financial baseline for nearly everything downstream. This view walks through the sequence: how participants bid, how the market clears, what happens during the operating day, and how settlement closes the loop.
+
+**1. Bidding (day-ahead, before ~11am).** Three participant types submit positions:
+
+- **Generators** submit supply offers — energy curves, start-up and minimum-run constraints (`generators → dam` action). Defines the supply side of SCUC.
+- **LSEs** submit demand bids — price-sensitive or self-scheduled load (`lses → dam` action). Procures next-day energy on behalf of retail load.
+- **Traders** submit financial increments and decrements — virtual bids that arbitrage the DAM–RTM seam (`traders → dam` action).
+
+**2. Clearing (day-ahead, ~1-4pm).** The ISO supplies the clearing engine with everything needed to optimize: the network model, the binding constraint set, loss factors, and the contingency list (`iso → dam` information). SCUC (security-constrained unit commitment) co-optimizes energy with ancillary services and produces hourly LMPs and cleared MW positions per node.
+
+**3. Outputs.** Clearing results flow back to the ISO for settlement and downstream coordination (`dam → iso` information): LMPs, cleared positions, congestion shadow prices, commitment schedules. DAM positions become the financial baseline that RTM settles against (`dam → rtm` information). DAM congestion drives FTR payouts (`dam → ftr` information).
+
+**4. Operating day.** Generators follow real-time dispatch (`generators → rtm` action) within the schedule DAM committed. The RTM clears 5-minute imbalances against DAM positions — but importantly, *RTM does not transfer money to DAM*. They're two parallel settlement runs administered by the ISO. The DAM commits the schedule and locks in financial positions at DAM LMPs; the RTM settles the deviations at RTM LMPs.
+
+**5. Settlement (D+1 to D+several).** Money flows through the cleared-market chain:
+
+- `lses → dam → iso → generators` (money) — LSEs pay DAM at LMP_load × cleared MW; the DAM aggregates settlement at the ISO; the ISO pays generators at LMP_gen × cleared MW.
+- `traders → dam` and `dam → iso → traders` (money) — virtual settlements clear in the same chain. Traders with net-negative positions owe; net-positive positions receive.
+- Generators with storage/hybrid charging are net-negative on those hours — they pay into the DAM rather than receive (`generators → dam` money).
+
+The residual at congested nodes — `(LMP_load − LMP_gen) × flow` — is the **congestion rent** the ISO collects. This rent is what funds FTR settlement (visible in this view as `ftr → iso` money: FTR aggregate settlement includes the congestion-rent inflow that pays FTR holders).
+
+**Why this matters.** The DAM is both a price-discovery mechanism AND the principal financial commitment. Generators commit physical resources at DAM clearing time and earn revenue at DAM LMPs; LSEs lock in their next-day cost exposure at the same prices. Almost everything downstream references DAM outputs: bilateral PPAs settle against DAM LMPs (`dam → bilateral` information), FTR settlements use DAM congestion (`dam → ftr` information), and ARR allocation uses historical DAM/RTM patterns. The DAM is the keystone of the cleared wholesale system.
+"""
+
 [lse-pays]
 name = "How an LSE's bill is built"
 default_edge_types = ["money", "action", "information"]
