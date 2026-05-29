@@ -1016,20 +1016,23 @@ function activateView(viewId) {
     n.toggleClass('out-of-view', !nodeViews.includes(viewId));
   });
 
-  // Strict mode: if any edges are tagged with this view, ONLY tagged edges
-  // are in-view. Otherwise fall back to both-endpoints + type-allowed.
+  // View edge inclusion:
+  //   - For the view's default edge types in strict mode: only tagged edges
+  //     are in-view (narrative-driven curation).
+  //   - For non-default types in strict mode (e.g. regulation in a view
+  //     where it's off by default): endpoint match, so the user can toggle
+  //     them on and see edges between in-view nodes.
+  //   - For fallback (no strict tags): endpoint match for all types.
   const allowedTypes = new Set(view.default_edge_types || []);
   const strict = GRAPH_DATA.edges.some(e => (e.views || []).includes(viewId));
   cy.edges().forEach(e => {
     const edgeViews = e.data('views') || [];
+    const edgeType = e.data('type');
     let inView;
-    if (strict) {
+    if (strict && allowedTypes.has(edgeType)) {
       inView = edgeViews.includes(viewId);
     } else {
-      const srcIn = !e.source().hasClass('out-of-view');
-      const tgtIn = !e.target().hasClass('out-of-view');
-      const typeAllowed = allowedTypes.has(e.data('type'));
-      inView = srcIn && tgtIn && typeAllowed;
+      inView = !e.source().hasClass('out-of-view') && !e.target().hasClass('out-of-view');
     }
     e.toggleClass('out-of-view', !inView);
   });
