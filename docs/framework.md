@@ -51,32 +51,40 @@ Market-market edges: DAM positions are the financial baseline RTM settles agains
 
 Actor-market edges: the canonical ones — generators offering into DAM, LSEs bidding demand, traders taking financial positions, all being regulated by tariffs.
 
-### Money edges: markets in the path, ISO as counterparty where applicable
+### Money edges: ISO is the counterparty for cleared transactions; bilateral is the exception
 
-Markets are where trades clear and prices form — money flows through them. Tariffs and processes determine *amounts* but don't conceptually hold cash, so money flows around them via the actors and the ISO that administers them. The full rule, by subcategory:
+For every centrally-cleared transaction (DAM, RTM, AS, capacity, FTR), money flows actor-to-ISO and ISO-to-actor — symmetric in both directions, with the ISO as the legal central counterparty. The cleared markets themselves don't carry money edges; their role is captured in the **information** and **action** edges that show what they determine and who participates.
 
-- **Markets** (DAM, RTM, AS, capacity, FTR, bilateral): money flows through the market node. For *centrally-cleared* markets (everything except bilateral), the ISO is also in the path as the legal central counterparty: `actor → market → iso → actor`. For *bilateral* (no central counterparty), the path is `actor → bilateral → actor`.
-- **Tariffs** (transmission tariffs, retail): money flows *around* the tariff. The tariff sets amounts (visible via information edges to ISO and customers); the cash flows through the actor administering collection. For OATT, that's the ISO (`lses → iso → to`). For retail, that's the LSE collecting from customers (`customers → lses`, no ISO).
-- **Processes** (ARR, interconnection): money flows *around* the process. ARR is a formula run by the ISO that distributes FTR auction revenue; the cash path is `ftr → iso → lses` with ARR providing the allocation logic via information edges. Interconnection is a one-time procurement; generators pay study deposits to the ISO and upgrade construction to the TO directly.
+For bilateral and direct transactions, money flows through the mechanism (bilateral) or counterparty-to-counterparty (retail, direct construction), with no ISO in the path. The full rule, by subcategory:
+
+- **Cleared markets** (DAM, RTM, AS, capacity, FTR): no money edges. Money for cleared transactions flows `actor ↔ iso` directly. The market's role is captured by:
+  - `iso → market` (information) — ISO supplies the network model, contingency list, etc.
+  - `market → iso` (information) — clearing outputs (LMPs, cleared positions) flow back to ISO for settlement
+  - `actor → market` (action) — bids and offers submitted into clearing
+- **Bilateral**: money flows through. `lses → bilateral → generators`, `customers → bilateral → generators`. Bilateral has no central counterparty, so the bilateral node IS the conceptual venue. (This is the principled exception to "cleared markets have no money edges" — bilateral isn't centrally cleared.)
+- **Tariffs** (transmission tariffs, retail): money flows around. For OATT, the cash flows `lses → iso → to` with `oatt → iso` (information) determining amounts. For retail, the cash flows `customers → lses` with `retail → customers` (information) determining amounts.
+- **Processes** (ARR, interconnection): money flows around. ARR's cash distribution runs through the ISO (`iso → lses`) with `ftr → arr` (information) explaining the funding source. Interconnection's cash runs direct (`generators → to` for construction, `generators → iso` for study deposits).
 
 Examples:
 
-- DAM cleared energy: `lses → dam → iso → generators` (money). The LSE pays DAM, DAM aggregates to ISO settlement, ISO pays the generator. Congestion rent — the residual between LMP_load × MW and LMP_gen × MW — is what the ISO has left after paying generators; it funds FTR settlement.
-- Bilateral PPA: `lses → bilateral → generators` (money). No ISO in the path because there's no central counterparty.
-- Transmission tariff: `lses → iso → to` (money). The transmission tariff (`oatt` node) determines the amount via `oatt → iso` information; the cash flows direct.
-- ARR cash: `ftr → iso` (money) for auction revenue collection, then `iso → lses` (money) for distribution per the ARR allocation formula.
-- Retail bill: `customers → lses` (money) under the retail tariff (`retail → customers` information). No ISO, no PUC in the cash path; the PUC sets the tariff via regulation, the LSE collects.
-- Network upgrade: `generators → to` (money). Direct contract under interconnection cost allocation; no ISO in the cash path.
+- DAM cleared energy: `lses → iso` and `iso → generators` (money). The DAM node has `iso → dam` (info) for the network model, `dam → iso` (info) for clearing outputs, and `lses → dam` (action) for bidding — but no money.
+- Bilateral PPA: `lses → bilateral → generators` (money). Bilateral is the venue; no ISO.
+- Transmission tariff: `lses → iso → to` (money). The `oatt` node sets the amount via information.
+- ARR cash: `iso → lses` (money), funded from FTR auction revenue collected via `lses → iso` and `traders → iso`. The `ftr → arr` (information) edge explains the formula's funding source.
+- Retail bill: `customers → lses` (money). No ISO, no PUC in the cash path; the PUC sets the tariff via regulation, the LSE collects under it.
+- Network upgrade: `generators → to` (money). Direct contract; no ISO in cash path.
 
 ### The ISO as operator, administrator, and central counterparty
 
 The ISO has three distinct roles in the graph:
 
 1. **Operator** — runs cleared markets, ARR allocation, and interconnection studies. Visible via regulation edges (`iso → dam`, `iso → rtm`, `iso → arr`, `iso → interconnection`, etc.).
-2. **Administrator** — distributes prices, dispatch instructions, settlement statements; reads clearing outputs from each market for settlement. Visible via information edges flowing both directions between ISO and markets/tariffs/actors.
-3. **Central counterparty** — in the literal cash flow for centrally-cleared transactions and ISO-administered tariffs (OATT collection, ARR distribution). Visible via money edges: `market → iso` (markets remitting cleared settlement), `iso → actor` (ISO paying participants), `lses → iso` (LSEs paying OATT uplift and revenue-inadequacy assessments), `generators → iso` (gens paying study deposits and miscellaneous administered charges), `iso → to` (OATT remittance).
+2. **Administrator** — distributes prices, dispatch instructions, settlement statements; reads clearing outputs from each market for settlement. Visible via information edges (`dam → iso`, `iso → generators` info, etc.).
+3. **Central counterparty** — collects from buyers and pays sellers across all centrally-cleared transactions, plus administers OATT collection and ARR distribution. Visible via money edges: `actor → iso` (LSEs/generators/traders paying for cleared positions) and `iso → actor` (ISO paying out cleared revenues, ARR cash, FTR settlements, OATT remittances).
 
-Bilateral, retail, and direct network-upgrade construction sit outside the CCP role — these flow counterparty-to-counterparty without ISO in the path. That asymmetry — which transactions flow through the ISO vs. directly — is a real structural feature of the system.
+The ISO money edges are intentionally bundled. A single `lses → iso` (money) edge carries the LSE's DAM share, RTM share, capacity share, AS uplift share, FTR auction buys, and OATT uplift — because the ISO settles them as one aggregate payment per settlement run. This matches how settlement statements actually arrive in practice: one statement per ISO, not per market.
+
+Bilateral, retail, and direct construction sit outside the CCP role — these flow counterparty-to-counterparty without ISO in the path. That distinction — which transactions are centrally-cleared vs. not — is a real structural feature of the system.
 
 ## Design principles
 

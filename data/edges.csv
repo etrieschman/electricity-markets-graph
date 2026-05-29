@@ -54,29 +54,16 @@ to,ferc,action,"TOs file OATT rate cases, transmission revenue requirement updat
 generators,bilateral,action,"Generators originate, negotiate, and execute bilateral supply contracts: PPAs (physical and financial), tolling agreements, bilateral RA, asset-backed marketing. The principal channel through which merchant economics translate into revenue.",,
 lses,bilateral,action,"LSEs procure bilateral supply: long-dated PPAs (often RPS-compliant), tolling, bilateral RA for capacity, and basis hedges. The primary hedge for retail load obligations beyond ISO product offerings.",,
 traders,bilateral,action,"Financial traders enter CFDs, basis swaps, heat-rate options, and other OTC instruments to take or offset risk positions without holding physical assets.",,
-generators,dam,money,Storage and hybrid resources buy DAM energy when scheduling charging — net-negative DAM positions create payments into the DAM clearing.,,dam-runs
-generators,rtm,money,Storage and hybrid resources buy real-time charging energy in RTM.,,
 generators,to,money,Generators pay network upgrade construction costs directly to TOs per interconnection cost allocation. Project-finance flow with no ongoing settlement.,,
-generators,iso,money,"Generators pay the ISO for interconnection study deposits, capacity-performance penalties, market-power mitigation assessments, and other ISO-administered charges that aren't tied to a specific cleared market.",,
-lses,dam,money,LSEs pay DAM for cleared next-day energy at hourly LMPs.,,dam-runs
-lses,rtm,money,LSEs pay RTM for imbalance energy when actual load deviates above their DAM-cleared position; settled at 5-min LMPs.,,
-lses,as,money,LSEs cover ancillary-service costs via load-pay uplift into the AS market.,,
-lses,capacity,money,"LSEs pay capacity charges based on load-share of system peak forecast (PJM RPM, ISO-NE FCM, NYISO ICAP, MISO PRA).",,
-lses,ftr,money,LSEs bid into the FTR auction for congestion hedges beyond self-converted ARRs.,,
+generators,iso,money,"Generators pay the ISO their net cleared-market obligations: storage/hybrid charging energy (DAM and RTM), capacity penalties for non-performance, interconnection study deposits, and other ISO-administered charges. The ISO is the legal counterparty for centrally-cleared transactions.",,dam-runs
 lses,bilateral,money,"LSE-side bilateral PPA payments — physical PPAs, tolling, bilateral RA. The principal long-dated hedge for retail load.",,
-lses,iso,money,"LSEs pay the ISO for OATT/transmission-service charges (allocated by load coincident with peaks — 4CP in ERCOT, 5CP in PJM, NSPL/PLC variants elsewhere) and any FTR revenue-inadequacy uplift assessments.",,
-traders,dam,money,Net-negative virtual settlement: trader increment/decrement positions clearing at prices that produce a payment obligation to the DAM.,,dam-runs
-traders,ftr,money,Financial-trader bids into the FTR auction — taking positions against expected DAM congestion patterns.,,
+lses,iso,money,"LSEs pay the ISO their net cleared-market obligations: DAM cleared energy at LMP_load, RTM imbalance buys, AS uplift, capacity charges (load-share of system peak — 4CP/5CP/NSPL by ISO), FTR auction buys, and OATT/transmission-service uplift. The single largest outflow on an LSE's balance sheet.",,dam-runs
+traders,iso,money,"Financial traders pay the ISO for buy-side FTR auction positions, net-negative virtual settlements (when increment/decrement positions clear unfavorably), and any revenue-inadequacy uplift assessments.",,dam-runs
 customers,lses,money,End customers pay retail bills to LSEs under PUC-approved retail tariff structures. The retail tariff determines the amount; the cash flow is direct.,,
 customers,bilateral,money,"Large customers (corporate buyers, industrial loads) pay directly into bilateral PPAs and virtual PPAs.",,
-dam,iso,money,"Aggregate DAM cleared-settlement flows to the ISO as central counterparty. ISO collects from net buyers and pays net sellers; the difference between collections and payments is congestion rent, which ISO routes to FTR settlement.",,dam-runs
-rtm,iso,money,Aggregate RTM imbalance settlement flows to the ISO for net payment to participants.,,
-as,iso,money,Aggregate AS clearing settlement flows to the ISO for distribution to AS-providing resources.,,
-capacity,iso,money,Aggregate capacity-market settlement flows to the ISO for distribution to cleared capacity resources.,,
-ftr,iso,money,Aggregate FTR settlement flows to the ISO — covers both FTR auction revenue collected from buyers and FTR congestion settlement payments to holders.,,dam-runs
-iso,generators,money,"ISO pays generators their net positions from cleared markets: DAM/RTM energy clearing, AS awards, capacity revenues.",,dam-runs
-iso,lses,money,"ISO pays LSEs ARR cash distributions (per the ARR formula run on FTR auction revenue), FTR settlement on LSE-held FTRs, RTM credits for DR/curtailment, and occasional uplift credits.",,
-iso,traders,money,ISO pays traders FTR congestion settlements and net-positive virtual settlement revenues.,,dam-runs
+iso,generators,money,"ISO pays generators their net cleared-market revenues: DAM/RTM energy clearing at LMP_gen, AS awards, capacity revenues. The ISO collects from buyers across all cleared markets and pays sellers from the aggregate pool; congestion rent — the residual between LMP_load and LMP_gen at congested constraints — funds FTR settlement.",,dam-runs
+iso,lses,money,"ISO pays LSEs ARR cash distributions (per the ARR formula applied to FTR auction revenue), FTR settlements on LSE-held FTRs, RTM credits for DR and curtailment, and occasional uplift credits.",,dam-runs
+iso,traders,money,ISO pays traders FTR congestion settlements (when path positions align with realized DAM congestion) and net-positive virtual settlement revenues.,,dam-runs
 iso,to,money,ISO remits OATT transmission revenue requirement collections to TOs as cost-of-service compensation.,,
 bilateral,generators,money,"Bilateral PPA settlements to generators — physical PPAs, tolling, bilateral RA. Settled financially against DAM LMPs; willingness-to-pay is shaped by capacity revenues (the missing-money debate).",,
 iso,dam,information,"ISO supplies network model, constraint set, loss factors, contingency list to DAM clearing optimization (SCUC).",,dam-runs
