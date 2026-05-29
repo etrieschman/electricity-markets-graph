@@ -214,6 +214,22 @@ aside.right { border-left: 1px solid var(--rule); }
   border-color: var(--ink);
 }
 
+.view-btn-name {
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.view-btn-meta {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  color: var(--ink-soft);
+  margin-top: 2px;
+}
+
+.view-btn.active .view-btn-meta {
+  color: rgba(245, 242, 234, 0.7);
+}
+
 .view-narrative {
   font-family: 'Inter Tight', sans-serif;
   font-size: 13px;
@@ -805,13 +821,28 @@ function renderNarrative(md) {
   return out.join('');
 }
 
+function countViewElements(view) {
+  const allowedTypes = new Set(view.default_edge_types || []);
+  const nodeSet = new Set(GRAPH_DATA.nodes.filter(n => (n.views || []).includes(view.id)).map(n => n.id));
+  const edgeCount = GRAPH_DATA.edges.filter(e => {
+    if ((e.views || []).includes(view.id)) return true;
+    return nodeSet.has(e.source) && nodeSet.has(e.target) && allowedTypes.has(e.type);
+  }).length;
+  return { nodes: nodeSet.size, edges: edgeCount };
+}
+
 function populateViewList() {
   const list = document.getElementById('view-list');
+  const allBtn = list.querySelector('button[data-view=""]');
+  if (allBtn) {
+    allBtn.innerHTML = `<div class="view-btn-name">All</div><div class="view-btn-meta">${GRAPH_DATA.nodes.length} nodes · ${GRAPH_DATA.edges.length} edges</div>`;
+  }
   for (const v of VIEWS) {
     const btn = document.createElement('button');
     btn.className = 'view-btn';
     btn.dataset.view = v.id;
-    btn.textContent = v.name;
+    const counts = countViewElements(v);
+    btn.innerHTML = `<div class="view-btn-name">${v.name}</div><div class="view-btn-meta">${counts.nodes} nodes · ${counts.edges} edges</div>`;
     list.appendChild(btn);
   }
   list.querySelectorAll('button').forEach(btn => {
