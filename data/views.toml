@@ -125,14 +125,21 @@ Auctions clear at a system-wide (or zonal) clearing price using a sloped demand 
 - **Generators receive capacity revenue** via `iso → generators` (money) — accredited MW × clearing price.
 - **Capacity penalties** for non-performance during shortage events flow `generators → iso` (money).
 
-**5. Bilateral interaction — the missing-money story.** Capacity revenue is one of the principal drivers of bilateral PPA willingness-to-pay (`capacity → bilateral` information). When capacity prices are high, LSEs can pay more for capacity-inclusive PPAs; when capacity prices are low or absent (energy-only markets), the bilateral layer has to price in the missing capacity revenue itself. This is the structural seam between organized capacity markets and the bilateral hedge layer.
+**5. State-policy signals.** Capacity market design is contested at the state/federal seam because what states want (clean-resource targets, subsidies for in-state resources, retail-side procurement preferences) and what FERC-regulated capacity markets do (clear at a system-wide price, neutral across resource types) are often in tension. Two information edges carry the signal:
 
-**6. Multi-year structure.** Most capacity auctions clear 3 years forward. This forward horizon is meant to give new-build economics time to develop and finance, but it also creates risk for both buyers (LSE costs locked in years ahead) and sellers (gens commit to deliver well before the operating period).
+- `legislature → capacity` (information): state RPS targets, decarbonization mandates, and clean-resource statutes drive accreditation reforms — ELCC methodology for variable resources, carve-outs, clean-capacity considerations.
+- `puc → capacity` (information): PUC actions — IRP outcomes, OOM (out-of-market) payments, state subsidies, retail-side resource preferences — create the operational pressure that surfaces in MOPR fights. State-subsidized resources offering at their actual marginal cost vs. an administrative floor is the canonical version of this debate.
+
+These are *information* edges, not regulation: state governments don't directly regulate FERC-jurisdictional capacity markets. They send signals that capacity-market designers (FERC, the ISO) have to respond to.
+
+**6. Bilateral interaction — the missing-money story.** Capacity revenue is one of the principal drivers of bilateral PPA willingness-to-pay (`capacity → bilateral` information). When capacity prices are high, LSEs can pay more for capacity-inclusive PPAs; when capacity prices are low or absent (energy-only markets), the bilateral layer has to price in the missing capacity revenue itself. This is the structural seam between organized capacity markets and the bilateral hedge layer.
+
+**7. Multi-year structure.** Most capacity auctions clear 3 years forward. This forward horizon is meant to give new-build economics time to develop and finance, but it also creates risk for both buyers (LSE costs locked in years ahead) and sellers (gens commit to deliver well before the operating period).
 
 **The contested questions:**
 
 - **Accreditation methodology** — how to value intermittent resources (ELCC parameters), storage duration, demand response counted against capacity.
-- **MOPR (Minimum Offer Price Rule)** — whether state-subsidized resources can offer at their actual marginal cost or must offer at an administrative floor. This is the state/federal seam.
+- **MOPR (Minimum Offer Price Rule)** — whether state-subsidized resources can offer at their actual marginal cost or must offer at an administrative floor.
 - **Demand curve parameters** — system-cost-of-new-entry (CONE), demand curve slope, performance assessment intervals.
 - **Whether to have a capacity market at all** — ERCOT's energy-only model is the alternative, with scarcity pricing instead of forward capacity payments.
 """
