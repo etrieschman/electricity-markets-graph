@@ -63,6 +63,20 @@ A money edge represents value transferred between two balance sheets. A market i
 
 This rule eliminates the temptation to draw `dam → ftr` (money) or `lses → oatt` (money). Both collapse into the cleaner pattern: `iso` is the counterparty, the market node carries the price signal via information, and the tariff governs via regulation. Where a flow appears to pass through a market (FTR auction revenue funding ARR distributions, for instance), the actual money lives in the ISO settlement system and the market-to-market edge becomes information (`ftr → arr` information: "FTR auction revenue is the funding source for ARR distributions").
 
+### What mechanism nodes carry
+
+If money never flows through a mechanism node, what is it doing in the graph? A reasonable question — and the first one a reader asks when they see, say, `lses → generators` (money) bypassing the `bilateral` node. The answer: mechanism nodes anchor the *information* and *action* relationships that explain why money has the structure it does. Removing a mechanism node doesn't collapse a money flow; it scatters the explanation of that money flow across multiple actor-actor edges that would have to carry the content in their descriptions.
+
+Concretely, for each mechanism node:
+
+- **`dam`, `rtm`, `as`, `capacity`, `ftr`** — produce clearing prices and clear participation. The price-production is one or more information edges (e.g., `dam → bilateral`, `dam → ftr`); the participation is action edges (e.g., `generators → dam`). Without the node, every price-reference relationship would have to be a direct actor-to-actor information edge.
+- **`bilateral`** — collects OTC participation from four distinct actor types (gens, lses, traders, large customers). Anchors the DAM LMP reference (`dam → bilateral`) and the capacity revenue WTP signal (`capacity → bilateral`). Money flows directly between counterparties (`lses → generators` for PPAs), but the *structure* of those contracts is determined here.
+- **`oatt`, `retail`** — administrative tariffs. No clearing, no actor action edges, very lightweight. But they anchor jurisdictional distinctions (FERC-set vs. PUC-set) and pricing-method content (4CP, 5CP, NSPL allocation methods for OATT; passthrough formulas for retail) that would otherwise have to live in regulation edge descriptions.
+- **`interconnection`** — hosts the queue process. Multiple actor actions converge here (`generators → interconnection`, `to → interconnection`), and outputs feed the ISO's resource model (`interconnection → iso`).
+- **`arr`** — hosts the LSE nomination action and the multi-source allocation formula (RTM load + OATT cost allocation + FTR auction revenue all feed in as information edges).
+
+The general pattern: **a mechanism node earns its keep when collapsing it would require spreading its content across multiple new pairwise edges**. By that test, all current mechanism nodes are justified. The `oatt` and `retail` tariff nodes have only 3 incident edges each — low connectivity is structural, not redundancy.
+
 ## Design principles
 
 ### Compression rule
