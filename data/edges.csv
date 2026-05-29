@@ -107,7 +107,6 @@ ftr,arr,information,"FTR auction revenue is the funding source for ARR allocatio
 dam,ftr,information,DAM congestion clearing produces the congestion rents (collected by the ISO from load) that fund FTR settlements. Revenue inadequacy emerges when these rents don't fund cleared FTRs in full.,,
 dam,bilateral,information,"DAM LMPs are the standard settlement reference for most bilateral hedges, PPAs, and CFDs. The DAM-bilateral link is what makes the OTC layer financially coherent.",,
 capacity,bilateral,information,Capacity market revenues shape bilateral PPA willingness-to-pay and the structure of capacity-inclusive vs energy-only contracts — the missing-money question lives in this edge.,,
-arr,retail,information,ARR cash received by LSEs typically flows through to retail customers as a credit against congestion-related costs in retail tariffs.,,
 retail,customers,information,"Retail tariff structure determines what customers owe: passes through wholesale energy, capacity, transmission, ARR credits, and policy adders.",,
 puc,capacity,information,"State PUC actions — IRP outcomes, OOM (out-of-market) payments, state subsidies, retail-side resource preferences — create signals the capacity market design must accommodate. The MOPR debate lives in this edge.",,
 legislature,capacity,information,"State RPS targets, clean-resource mandates, and decarbonization goals drive capacity accreditation reforms (ELCC methodology fights, clean-resource carve-outs).",,
