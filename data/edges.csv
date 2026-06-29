@@ -1,26 +1,26 @@
 source_node,target_node,type,description,source,views
-ferc,iso,regulation,"FERC approves ISO tariff, market rules, and major design changes. Jurisdictional authority over wholesale markets.",,
-ferc,to,regulation,FERC approves transmission rates and Open Access Transmission Tariff (OATT). Order 1000 mandated regional planning.,,
-ferc,nerc,regulation,"FERC oversight of NERC under EPAct 2005 — approves NERC's reliability standards, sanctions enforcement actions, and may direct standards development.",,
+ferc,iso,regulation,"FERC approves ISO tariff, market rules, and major design changes. Jurisdictional authority over wholesale markets.","FERC Order No. 2000 (RTOs/ISOs); Order No. 888 (open access). https://www.ferc.gov/power-sales-and-markets/rtos-and-isos",
+ferc,to,regulation,FERC approves transmission rates and Open Access Transmission Tariff (OATT). Order 1000 mandated regional planning.","FERC Order No. 888 (OATT); Order No. 1000 (transmission planning & cost allocation). https://www.ferc.gov/electric-transmission/order-no-1000-transmission-planning-and-cost-allocation",
+ferc,nerc,regulation,"FERC oversight of NERC under EPAct 2005 — approves NERC's reliability standards, sanctions enforcement actions, and may direct standards development.","EPAct 2005 / FPA section 215; FERC Order No. 672. https://www.ferc.gov/reliability-explainer",
 ferc,generators,regulation,"FERC regulates wholesale generator conduct: market power mitigation, market-based rate (MBR) authority (including for bilateral wholesale sales), must-offer rules, anti-manipulation, asset divestiture conditions.",,
 ferc,lses,regulation,"FERC regulates LSE wholesale market behavior — participation in capacity, energy, and ancillary services markets; cost allocation under FERC tariffs.",,
-ferc,traders,regulation,"FERC regulates financial market participation across cleared markets and bilateral OTC instruments: anti-manipulation (Order 670), capital/credit requirements for virtual and FTR trading, affiliate transaction rules.",,
+ferc,traders,regulation,"FERC regulates financial market participation across cleared markets and bilateral OTC instruments: anti-manipulation (Order 670), capital/credit requirements for virtual and FTR trading, affiliate transaction rules.","FERC Order No. 670 (anti-manipulation, EPAct 2005 sec. 1283).",
 ferc,dam,regulation,"FERC approves DAM design including offer caps, mitigation, and clearing rules.",,
-ferc,rtm,regulation,"FERC approves RTM design, scarcity pricing constructs, and operating reserve demand curves where applicable.",,
-ferc,as,regulation,FERC approves AS product definitions and procurement rules.,,
+ferc,rtm,regulation,"FERC approves RTM design, scarcity pricing constructs, and operating reserve demand curves where applicable.","FERC Order No. 719 (operating-reserve shortage / scarcity pricing). https://www.ferc.gov/sites/default/files/2020-06/OrderNo.719.pdf",
+ferc,as,regulation,FERC approves AS product definitions and procurement rules.,"FERC Order No. 719 (ancillary services reform). https://www.ferc.gov/sites/default/files/2020-06/OrderNo.719.pdf",
 ferc,capacity,regulation,"FERC approves capacity market design including accreditation, mitigation, and demand curves. Site of major contestation (MOPR, ELCC reforms).",,
 ferc,ftr,regulation,FERC approves FTR auction design and SFT methodology.,,
 ferc,arr,regulation,FERC approves ARR allocation formula in ISO tariff.,,
-ferc,oatt,regulation,"FERC sets OATT transmission service rates, transmission revenue requirements, and approves RMR contracts. Order 1000 mandated regional planning and cost allocation.",,
-ferc,interconnection,regulation,FERC sets interconnection process rules. Order 2023 mandated cluster studies and other reforms.,,
+ferc,oatt,regulation,"FERC sets OATT transmission service rates, transmission revenue requirements, and approves RMR contracts. Order 1000 mandated regional planning and cost allocation.","FERC Order No. 888 (open access). https://www.ferc.gov/industries-data/electric/industry-activities/open-access-transmission-tariff-oatt-reform/history-oatt-reform/order-no-888",
+ferc,interconnection,regulation,FERC sets interconnection process rules. Order 2023 mandated cluster studies and other reforms.,"FERC Order No. 2023 (generator interconnection). https://www.ferc.gov/media/order-no-2023",
 puc,lses,regulation,"State PUCs regulate LSE certification, retail conduct, and procurement obligations (IRP filings, RPS compliance reporting).",,
 puc,customers,regulation,"State PUCs set retail rate structures, consumer protections, and distribution-level rules.",,
 puc,retail,regulation,State PUCs approve retail tariffs and distribution rates. Primary venue for ratemaking proceedings.,,
 puc,interconnection,regulation,State PUCs handle distribution-level interconnection (FERC handles transmission-level).,,
 puc,to,regulation,State PUCs hold siting authority over in-state transmission lines and review certificates of public convenience and necessity (CPCNs). The state/federal seam in transmission expansion — contested under FERC's Order 1000 backstop siting authority.,,
-nerc,iso,regulation,"NERC reliability standards constrain ISO operations (e.g., BAL standards on balancing authority performance).",,
-nerc,to,regulation,"NERC reliability standards constrain TO planning and operations (e.g., TPL planning standards).",,
-nerc,generators,regulation,"NERC GO/GOP standards apply to generator owners and operators (e.g., PRC protection coordination, MOD modeling requirements).",,
+nerc,iso,regulation,"NERC reliability standards constrain ISO operations (e.g., BAL standards on balancing authority performance).","NERC Reliability Standards (BAL). https://www.nerc.com/standards/us-reliability-standards",
+nerc,to,regulation,"NERC reliability standards constrain TO planning and operations (e.g., TPL planning standards).","NERC Reliability Standards (TPL). https://www.nerc.com/standards/us-reliability-standards",
+nerc,generators,regulation,"NERC GO/GOP standards apply to generator owners and operators (e.g., PRC protection coordination, MOD modeling requirements).","NERC Reliability Standards (PRC, MOD). https://www.nerc.com/standards/us-reliability-standards",
 legislature,puc,regulation,"State legislatures set the statutory framework PUCs operate within. RPS, clean energy mandates, ratemaking principles.",,
 legislature,lses,regulation,"State policies (RPS, carbon pricing pass-through, retail competition rules) directly bind LSEs as the obligated entity.",,
 iso,dam,regulation,ISO operates DAM and sets implementation rules within the FERC-approved tariff.,,
@@ -30,7 +30,7 @@ iso,capacity,regulation,"ISO runs capacity auction, sets accreditation rules, de
 iso,ftr,regulation,"ISO runs FTR auction, performs SFT, defines feasibility region.",,
 iso,arr,regulation,ISO administers ARR allocation per tariff formula.,,
 iso,interconnection,regulation,"ISO runs interconnection studies, sets queue rules, allocates network upgrade costs.",,
-capacity,dam,regulation,Must-offer obligations from capacity market constrain how cleared capacity must bid into DAM.,,
+capacity,dam,information,"Cleared capacity carries a must-offer obligation: committed resources must offer into DAM, constraining the supply curve.",,
 generators,dam,action,"Generators submit supply offers (energy curves, start/min-run constraints). Defines the supply side of SCUC.",,dam-runs
 lses,dam,action,LSEs submit demand bids (price-sensitive or self-scheduled) to procure next-day energy on behalf of load.,,dam-runs
 traders,dam,action,Virtual bidders submit financial increments and decrements to arbitrage the DAM-RTM seam; FTR traders may submit DAM bids tied to congestion positions.,,dam-runs
@@ -40,11 +40,11 @@ generators,as,action,"Generators (and storage, hybrid resources) offer reserve a
 generators,capacity,action,"Generators (and increasingly storage, hybrid resources) offer capacity supply obligations into the auction.",,capacity-runs
 traders,ftr,action,"Financial traders bid on path-based congestion rights, taking positions against expected DAM congestion patterns.",,ftr-runs
 lses,ftr,action,LSEs self-convert ARRs to FTRs or bid in the FTR auction to hedge congestion exposure on their load.,,ftr-runs
-lses,arr,action,LSEs nominate ARRs against their load-and-transmission-cost obligations and choose to take cash or self-convert to FTRs.,,ftr-runs
+lses,arr,action,LSEs nominate ARRs against their load-and-transmission-cost obligations and choose to take cash or self-convert to FTRs.,,"ftr-runs"
 generators,interconnection,action,"Generators submit interconnection applications, fund studies, negotiate LGIAs and network upgrade cost allocation.",,
 customers,puc,action,"Consumer advocates and individual large customers intervene in PUC proceedings — rate cases, RPS dockets, large-load policy.",,
-customers,ferc,action,"Large customers (data center coalitions, industrial loads) and consumer advocates intervene at FERC on transmission cost allocation, interconnection rules (Order 2023), and large-load capacity treatment.",,
-customers,bilateral,action,"Large customers (corporate buyers, industrial loads) originate corporate PPAs and virtual PPAs directly with generators or traders. Distinct from LSE-mediated retail procurement.",,
+largeload,ferc,action,"Large-load and data-center interests intervene at FERC on interconnection, cost allocation, and colocation rules.","FERC Order No. 2023 (interconnection). https://www.ferc.gov/media/order-no-2023",
+largeload,bilateral,action,"Large loads negotiate corporate PPAs and on-site or colocation supply deals with generators, reducing the net power they draw from the grid.",,load-bill
 generators,ferc,action,"Generators file complaints, intervene in proceedings, request tariff changes, file market-based rate updates.",,
 lses,ferc,action,"LSEs intervene in tariff filings, file complaints over cost allocation, participate in capacity market proceedings.",,
 traders,ferc,action,"Financial traders intervene in FTR and virtual-bidding proceedings, file complaints over uplift and revenue adequacy.",,
@@ -57,10 +57,10 @@ traders,bilateral,action,"Financial traders enter CFDs, basis swaps, heat-rate o
 generators,to,money,Generators pay network upgrade construction costs directly to TOs per interconnection cost allocation. Project-finance flow with no ongoing settlement.,,
 generators,iso,money,"Generators pay the ISO their net cleared-market obligations: storage/hybrid charging energy (DAM and RTM), capacity penalties for non-performance, interconnection study deposits, and other ISO-administered charges. The ISO is the legal counterparty for centrally-cleared transactions.",,"dam-runs,rtm-runs,capacity-runs"
 lses,bilateral,money,"LSE-side bilateral PPA payments — physical PPAs, tolling, bilateral RA. The principal long-dated hedge for retail load.",,
-lses,iso,money,"LSEs pay the ISO their net cleared-market obligations: DAM cleared energy at LMP_load, RTM imbalance buys, AS uplift, capacity charges (load-share of system peak — 4CP/5CP/NSPL by ISO), FTR auction buys, and OATT/transmission-service uplift. The single largest outflow on an LSE's balance sheet.",,"dam-runs,rtm-runs,ftr-runs,capacity-runs"
+lses,iso,money,"LSEs pay the ISO their net cleared-market obligations: DAM cleared energy at LMP_load, RTM imbalance buys, AS uplift, capacity charges (load-share of system peak — 4CP/5CP/NSPL by ISO), FTR auction buys, and OATT/transmission-service uplift. The single largest outflow on an LSE's balance sheet.",,"dam-runs,rtm-runs,ftr-runs,capacity-runs,load-bill"
 traders,iso,money,"Financial traders pay the ISO for buy-side FTR auction positions, net-negative virtual settlements (when increment/decrement positions clear unfavorably), and any revenue-inadequacy uplift assessments.",,"dam-runs,ftr-runs"
 customers,lses,money,End customers pay retail bills to LSEs under PUC-approved retail tariff structures. The retail tariff determines the amount; the cash flow is direct.,,
-customers,bilateral,money,"Large customers (corporate buyers, industrial loads) pay directly into bilateral PPAs and virtual PPAs.",,
+largeload,bilateral,money,"Payments into corporate PPAs and colocation supply agreements.",,load-bill
 iso,generators,money,"ISO pays generators their net cleared-market revenues: DAM/RTM energy clearing at LMP_gen, AS awards, capacity revenues. The ISO collects from buyers across all cleared markets and pays sellers from the aggregate pool; congestion rent — the residual between LMP_load and LMP_gen at congested constraints — funds FTR settlement.",,"dam-runs,rtm-runs,capacity-runs"
 iso,lses,money,"ISO pays LSEs ARR cash distributions (per the ARR formula applied to FTR auction revenue), FTR settlements on LSE-held FTRs, RTM credits for DR and curtailment, and occasional uplift credits.",,"dam-runs,rtm-runs,ftr-runs"
 iso,traders,money,ISO pays traders FTR congestion settlements (when path positions align with realized DAM congestion) and net-positive virtual settlement revenues.,,"dam-runs,ftr-runs"
@@ -77,10 +77,10 @@ iso,to,information,"ISO sends outage approvals, dispatch coordination, and post-
 iso,ferc,information,"ISO reports market outcomes, performance metrics, and proposed tariff changes.",,
 nerc,ferc,information,"NERC submits proposed reliability standards, compliance reports, and event analyses to FERC for approval and oversight.",,
 to,iso,information,"TO provides network topology, equipment ratings, outage schedules to ISO for use in market clearing models.",,
-dam,iso,information,"DAM clearing produces LMPs and cleared positions. These outputs flow back to the ISO, which uses them as the basis for settlement and as inputs to RTM, FTR settlement, and downstream processes.",,dam-runs
-rtm,iso,information,RTM clearing produces 5-minute LMPs and dispatch quantities used by the ISO for imbalance settlement.,,rtm-runs
-as,iso,information,AS clearing prices and awarded quantities flow back to the ISO for settlement and dispatch.,,
-capacity,iso,information,"Capacity auction results (clearing prices, cleared positions) flow back to the ISO for billing and obligation tracking.",,capacity-runs
+dam,iso,information,"DAM clearing produces LMPs and cleared positions. These outputs flow back to the ISO, which uses them as the basis for settlement and as inputs to RTM, FTR settlement, and downstream processes.",,"dam-runs,load-bill"
+rtm,iso,information,RTM clearing produces 5-minute LMPs and dispatch quantities used by the ISO for imbalance settlement.,,"rtm-runs,load-bill"
+as,iso,information,AS clearing prices and awarded quantities flow back to the ISO for settlement and dispatch.,,load-bill
+capacity,iso,information,"Capacity auction results (clearing prices, cleared positions) flow back to the ISO for billing and obligation tracking.",,"capacity-runs,load-bill"
 ftr,iso,information,"FTR auction results (cleared positions, clearing prices) flow to the ISO, which collects auction revenue and uses cleared positions to settle against DAM congestion.",,ftr-runs
 arr,iso,information,"ARR allocation outputs (ARR awards by LSE and path) flow to the ISO, which uses them to disburse ARR cash and to determine self-conversion eligibility in the FTR auction.",,ftr-runs
 interconnection,iso,information,"Interconnection outputs (queue position, study results, signed LGIAs, network upgrade plans) flow to the ISO and update the resource model used by DAM/RTM/capacity.",,
@@ -89,11 +89,23 @@ dam,as,information,Energy and AS are co-optimized; AS clearing prices reflect th
 rtm,as,information,Real-time energy and AS are co-optimized; AS deployment occurs in real-time.,,rtm-runs
 rtm,arr,information,Historical load data from RTM settlements feeds the ARR allocation formula.,,ftr-runs
 oatt,arr,information,Transmission cost allocation under OATT feeds the ARR allocation formula.,,ftr-runs
-oatt,iso,information,"OATT tariff schedule determines the transmission charges the ISO collects from transmission users (generators, LSEs, traders) and remits to TOs. The mechanical price signal behind the OATT/TRR money flow.",,
+oatt,iso,information,"OATT tariff schedule determines the transmission charges the ISO collects from transmission users (generators, LSEs, traders, and transmission-level large loads) and remits to TOs. The mechanical price signal behind the OATT/TRR money flow.",,load-bill
 ftr,arr,information,"FTR auction revenue is the funding source for ARR allocation distributions. Both flows pass through the ISO, but the structural dependency is FTR-auction-revenue → ARR-pool.",,ftr-runs
 dam,ftr,information,DAM congestion clearing produces the congestion rents (collected by the ISO from load) that fund FTR settlements. Revenue inadequacy emerges when these rents don't fund cleared FTRs in full.,,"dam-runs,ftr-runs"
-dam,bilateral,information,"DAM LMPs are the standard settlement reference for most bilateral hedges, PPAs, and CFDs. The DAM-bilateral link is what makes the OTC layer financially coherent.",,dam-runs
-capacity,bilateral,information,Capacity market revenues shape bilateral PPA willingness-to-pay and the structure of capacity-inclusive vs energy-only contracts — the missing-money question lives in this edge.,,capacity-runs
+dam,bilateral,information,"DAM LMPs are the standard settlement reference for most bilateral hedges, PPAs, and CFDs. The DAM-bilateral link is what makes the OTC layer financially coherent.",,"dam-runs,load-bill"
+capacity,bilateral,information,Capacity market revenues shape bilateral PPA willingness-to-pay and the structure of capacity-inclusive vs energy-only contracts — the missing-money question lives in this edge.,,"capacity-runs,load-bill"
 retail,customers,information,"Retail tariff structure determines what customers owe: passes through wholesale energy, capacity, transmission, ARR credits, and policy adders.",,
 puc,capacity,information,"State PUC actions — IRP outcomes, OOM (out-of-market) payments, state subsidies, retail-side resource preferences — create signals the capacity market design must accommodate. The MOPR debate lives in this edge.",,capacity-runs
 legislature,capacity,information,"State RPS targets, clean-resource mandates, and decarbonization goals drive capacity accreditation reforms (ELCC methodology fights, clean-resource carve-outs).",,capacity-runs
+largeload,iso,money,"A transmission-level load settles wholesale charges directly with the ISO: energy at the LMP, ancillary-service uplift, capacity, and transmission. Each layer appears as a separate charge rather than one blended rate.","FERC Order No. 888 (open access); Order No. 2000 (RTOs/ISOs). https://www.ferc.gov/power-sales-and-markets/rtos-and-isos",load-bill
+largeload,lses,money,"A load served through an LSE pays one bundled rate, often under a negotiated large-load tariff. The wholesale layers are blended together and the LSE holds the market instruments.",,load-bill
+iso,largeload,money,"Credits paid back to a transmission-level load: payments for real-time curtailment and settlements on any congestion rights it holds.","FERC Order No. 745 (demand response compensation). https://www.ferc.gov/sites/default/files/2020-06/Order-745.pdf",load-bill
+iso,largeload,information,"Prices, settlement statements, and capacity obligations published to a directly-connected load.",,load-bill
+retail,largeload,information,"For an LSE-served load, the retail tariff sets the bundled rate — a blended pass-through of wholesale energy, capacity, and transmission charges.",,load-bill
+largeload,rtm,action,"A flexible load can cut consumption when the real-time price is high. Loads that value uptime highly, such as data centers, rarely curtail on price alone.","FERC Order No. 719 (demand response in energy markets). https://www.ferc.gov/sites/default/files/2020-06/OrderNo.719.pdf",load-bill
+largeload,as,action,"A load that can curtail quickly could sell that ability as an operating reserve. Most markets do not yet allow demand-side reserves, so this is rarely compensated today.","FERC Order No. 719; Order No. 2222 (DER aggregation). https://www.ferc.gov/media/ferc-order-no-2222-fact-sheet",load-bill
+largeload,arr,action,"A transmission-level load can hold congestion rights (ARRs and FTRs) itself instead of relying on an LSE.",,load-bill
+largeload,interconnection,action,"Large loads increasingly go through interconnection study and pay for network upgrades — an emerging process whose rules are still being set.","FERC Order No. 2023 (interconnection procedures). https://www.ferc.gov/media/order-no-2023",load-bill
+largeload,puc,action,"Large loads negotiate special retail tariffs and intervene in state proceedings over large-load cost allocation.",,
+ferc,largeload,regulation,"FERC regulates a transmission-level load's wholesale participation and is writing large-load interconnection and cost-allocation rules.","FERC Order No. 2023 (interconnection). https://www.ferc.gov/media/order-no-2023",
+puc,largeload,regulation,"State PUCs set special retail tariffs for large loads served through an LSE.",,

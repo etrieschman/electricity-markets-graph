@@ -4,7 +4,7 @@ This document describes the framework underlying the graph: the node typology, e
 
 ## Object
 
-The framework treats the U.S. electricity market as a **typed multigraph**. Nodes have one of two types (actor, market). Directed adges have one of four types (action, money, regulation, information). Multiple edges of different types are allowed between the same pair of nodes — in fact, a lot of structure lives in this space.
+The framework treats the U.S. electricity market as a **typed multigraph**. Nodes have one of two categories (actor, mechanism). Directed edges have one of four types (action, money, regulation, information). Multiple edges of different types are allowed between the same pair of nodes — in fact, a lot of structure lives in this space.
 
 The graph is the *reference object*. Specific topics (FTR design, capacity adequacy, large-load policy, DCOPF approximation gaps) are *subgraphs* of it.
 
@@ -18,7 +18,7 @@ Each node has a **category** (`actor` or `mechanism`) and a **subcategory** that
 
 - **Regulator** — sets rules with statutory authority. `ferc`, `puc`, `nerc`, `legislature`.
 - **Operator** — institutional intermediary that runs markets or owns transmission assets, but doesn't take positions and isn't a principal regulator. `iso`, `to`.
-- **Participant** — buys, sells, hedges, or consumes. `generators`, `lses`, `traders`, `customers`.
+- **Participant** — buys, sells, hedges, or consumes. `generators`, `lses`, `traders`, `customers`, `largeload`.
 
 **Mechanism** — a recurring or standing arrangement that determines transactions. Three subcategories spanning the *liquidity gradient*:
 
@@ -30,6 +30,7 @@ The earlier graph used a binary `actor` / `market` typing and called OATT, retai
 
 - **Notes on this decision**
   - **Generators / LSEs / traders are split because they have genuinely different edge profiles.** Generators are the only actors with interconnection, NERC GO/GOP, capacity supply, and AS supply edges. LSEs are the only ones with ARR nomination, retail-customer money inflows, PUC regulation, and RPS obligations. Traders have only DAM/RTM/FTR/bilateral financial positions — no interconnection, no NERC, no capacity, no retail. Collapsing them hides edges the framework needs to express.
+  - **Large flexible loads are split from end customers for the same reason.** `customers` (residential/commercial/small industrial, served through an LSE) sees the grid only through the bundled retail bill — its sole money edge is `customers → lses`. `largeload` (data centers, electrolyzers, large industrial) has a materially different profile depending on interconnection class: a transmission-level load settles directly with the ISO (`largeload → iso`), holds its own congestion instruments (`largeload → arr`), goes through interconnection-style study (`largeload → interconnection`), and negotiates colocation/corporate-PPA deals (`largeload → bilateral`); it can also offer real-time curtailment (`largeload → rtm`) and, in principle, reserves (`largeload → as`). Collapsing the two would hide every edge that makes large-load cost allocation and flexibility valuation a live question — which is exactly the seam the *load's bill* view explores. Residential, commercial, and ordinary industrial sub-types of `customers` remain a level-2 expansion candidate (see below).
   - **Bilateral / OTC is a market node.** Earlier versions of the graph treated bilateral contracts as direct actor-to-actor edges, on the reasoning that they don't clear centrally. The current view is that they belong on the liquidity gradient between cleared auctions and administrative rates: PPAs, tolling, bilateral RA, and financial CFDs are recurring arrangements with standardized settlement references (DAM LMPs as the energy benchmark) even though no single counterparty clears them. Per the money-through-mechanisms rule below, PPA money flows `lses → bilateral → generators` — the bilateral node is the conceptual venue.
   - **OATT and retail are split because they have different regulators, payers, and recipients.** OATT is FERC-regulated, paid by transmission users (generators, LSEs, traders), and remitted to TOs. Retail tariffs are PUC-regulated, paid by customers, and collected by LSEs. They share no neighbors, so the compression rule keeps them apart.
   - **Regulatory constructs collapse into edges.** A FERC order is an action by FERC that modifies the rules governing some market or actor. NERC standards are constraints NERC imposes on ISOs, TOs, and generators. State RPS policies are obligations legislatures impose on LSEs. In every case, the "construct" is really *an actor exercising authority over another node*, which is exactly what a regulation edge is. Treating them as edges rather than nodes simplifies the graph without losing any structure.
@@ -40,7 +41,7 @@ The earlier graph used a binary `actor` / `market` typing and called OATT, retai
 ### Four types
 - **Action** — an actor doing something. Examples: a generator submitting an offer into DAM, an LSE filing a rate case, FERC issuing an order, a customer paying a bill, a TO conducting an interconnection study.
 - **Money** — value flowing between nodes. Examples: load paying the ISO for cleared DAM energy, the ISO paying generators from collected revenues, customers paying retail bills, OATT collections flowing to TOs, FTR auction revenues funding ARR distributions.
-- **Regulation** — rules constraining behavior or determining how money amounts are set. Examples: FERC approving the ISO tariff, NERC reliability standards binding the ISO, state PUCs setting retail rates, must-offer obligations from the capacity market constraining DAM bidding. Two flavors coexist in the graph: **principal regulation** (a regulator with statutory authority sets the rules — `ferc → iso`, `puc → retail`) and **delegated operational rulemaking** (the ISO sets implementation rules within a FERC-approved tariff — `iso → dam`). Both are "rules constraining behavior" by the definition above, but the source of authority differs.
+- **Regulation** — rules constraining behavior or determining how money amounts are set, where the *source* is an actor exercising authority. Examples: FERC approving the ISO tariff, NERC reliability standards binding the ISO, state PUCs setting retail rates. Two flavors coexist in the graph: **principal regulation** (a regulator with statutory authority sets the rules — `ferc → iso`, `puc → retail`) and **delegated operational rulemaking** (the ISO sets implementation rules within a FERC-approved tariff — `iso → dam`). Both are "rules constraining behavior," but the source of authority differs. Note a constraint between two *mechanisms* (e.g. the capacity must-offer obligation that binds cleared resources to offer into DAM) is **not** regulation — no actor authority flows market-to-market — it is an information edge (`capacity → dam`).
 - **Information** — data, models, forecasts, prices, telemetry flowing between nodes. Examples: the ISO supplying a network model to DAM clearing, RTM clearing results flowing back to the ISO for settlement, DAM LMPs being the reference price PPAs settle against, historical load data feeding the ARR allocation formula.
 
 ### Edges can exist between any pair of node types
@@ -61,7 +62,7 @@ For bilateral and direct transactions, money flows through the mechanism (bilate
   - `iso → market` (information) — ISO supplies the network model, contingency list, etc.
   - `market → iso` (information) — clearing outputs (LMPs, cleared positions) flow back to ISO for settlement
   - `actor → market` (action) — bids and offers submitted into clearing
-- **Bilateral**: money flows through. `lses → bilateral → generators`, `customers → bilateral → generators`. Bilateral has no central counterparty, so the bilateral node IS the conceptual venue. (This is the principled exception to "cleared markets have no money edges" — bilateral isn't centrally cleared.)
+- **Bilateral**: money flows through. `lses → bilateral → generators`, `largeload → bilateral → generators`. Bilateral has no central counterparty, so the bilateral node IS the conceptual venue. (This is the principled exception to "cleared markets have no money edges" — bilateral isn't centrally cleared.)
 - **Tariffs** (transmission tariffs, retail): money flows around. For OATT, the cash flows `lses → iso → to` with `oatt → iso` (information) determining amounts. For retail, the cash flows `customers → lses` with `retail → customers` (information) determining amounts.
 - **Processes** (ARR, interconnection): money flows around. ARR's cash distribution runs through the ISO (`iso → lses`) with `ftr → arr` (information) explaining the funding source. Interconnection's cash runs direct (`generators → to` for construction, `generators → iso` for study deposits).
 
@@ -111,7 +112,7 @@ The current graph is a *top-level* graph (20 nodes). Several nodes are candidate
 - **DAM** → SCUC, RUC, virtual bidding, settlement (also the natural home for the OPF / LMP decomposition details — energy, losses, congestion as dual variables on the network constraints)
 - **RTM** → SCED, ORDC and scarcity pricing, imbalance settlement
 - **OATT** → transmission service, transmission revenue requirement, RMR (FERC-jurisdictional flavors)
-- **End Customers** → residential, commercial, industrial, large flexible loads (data centers as a contested sub-category)
+- **End Customers** → residential, commercial, industrial (different load shapes, rate classes, and DR exposure). Large flexible loads (data centers, electrolyzers) have *already* been promoted to their own top-level node (`largeload`), since their edge profile diverges from bundled retail customers; the remaining sub-types are a level-2 candidate.
 - **Transmission planning** → a *new* level-2 candidate. Order 1000 regional planning is structurally similar to interconnection (recurring multi-stakeholder process with cost allocation rules) but is currently folded into `to → ferc` action and `iso → to` information edges. Worth splitting out if transmission cost allocation grows in salience.
 - **DR aggregator** → another level-2 candidate. Order 2222 mediation between customers and wholesale markets currently has no representation; the `customers → rtm` direct edge was removed as glossing this mediation.
 

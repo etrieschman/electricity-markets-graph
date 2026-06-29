@@ -6,8 +6,9 @@ Usage (from repo root):
     python scripts/regenerate.py
 
 Reads CSVs and the views file, validates them, and rewrites the embedded
-data block in index.html. The `source` column on the CSVs is preserved as
-metadata but is not currently displayed in the visualization.
+data block in index.html. The `source` column on the CSVs is carried into
+the data and rendered in the selection panel: any URL in the citation
+becomes a compact "↗ rule" link, the rest shows as the citation label.
 """
 import csv
 import json

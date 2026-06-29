@@ -109,7 +109,7 @@ default_edge_types = ["action", "information", "money"]
 layout = "concentric"
 focus = "capacity"
 narrative = """
-The capacity market is the wholesale wholesale system's mechanism for procuring forward generation capacity — committing resources years ahead to ensure adequate supply during peak periods. It exists because energy markets alone may not provide enough revenue to support new investment (the "missing money" problem). PJM RPM, ISO-NE FCM, NYISO ICAP, and MISO PRA are the four canonical capacity markets; ERCOT and CAISO use alternative mechanisms.
+The capacity market is the wholesale system's mechanism for procuring forward generation capacity — committing resources years ahead to ensure adequate supply during peak periods. It exists because energy markets alone may not provide enough revenue to support new investment (the "missing money" problem). PJM RPM, ISO-NE FCM, NYISO ICAP, and MISO PRA are the four canonical capacity markets; ERCOT and CAISO use alternative mechanisms.
 
 **1. Accreditation.** Not every nameplate MW counts the same. The ISO determines each resource's *accredited capacity* — its effective contribution to reliability — via methodologies like ELCC (effective load carrying capability), particularly for variable resources like wind and solar (`iso → capacity` information). Accreditation choices are increasingly the contested ground in capacity market design.
 
@@ -142,4 +142,27 @@ These are *information* edges, not regulation: state governments don't directly 
 - **MOPR (Minimum Offer Price Rule)** — whether state-subsidized resources can offer at their actual marginal cost or must offer at an administrative floor.
 - **Demand curve parameters** — system-cost-of-new-entry (CONE), demand curve slope, performance assessment intervals.
 - **Whether to have a capacity market at all** — ERCOT's energy-only model is the alternative, with scarcity pricing instead of forward capacity payments.
+"""
+
+[load-bill]
+name = "A large flexible load's bill"
+default_edge_types = ["money", "information", "action"]
+layout = "fcose"
+focus = "largeload"
+narrative = """
+A load's electricity bill is the sum of charges for the different ways its consumption uses the grid. This view groups those charges into three layers and shows what sets each one.
+
+**Energy.** The cost of the power itself, priced at the location's market price (the LMP). Set by market clearing (`dam → iso`, `rtm → iso`) and collected through the load's settlement (`largeload → iso`). A load lowers this by using less when the price is high.
+
+**Reserves.** The cost of holding spare capacity to keep the system balanced. Part is built into the energy price; the rest is an uplift charge split across load (`as → iso`) that curtailing does not reduce. A load that can drop quickly could instead sell that ability as a reserve (`largeload → as`), though most markets do not yet allow this.
+
+**Capacity and transmission.** The cost of building enough generation and wires for peak demand, recovered as a capacity charge (`capacity → iso`) and a transmission charge (`oatt → iso`), both sized by the load's demand at peak. A load reduces these only by lowering its peak.
+
+**How the connection type changes the bill.** The same charges reach a load differently depending on how it connects:
+
+- **Through an LSE (bundled).** The load pays one blended rate (`largeload → lses`; `retail → largeload` sets it). The LSE faces the wholesale market for it (`lses → iso`), so the layers are averaged together and hidden.
+- **At the transmission level (direct).** The load settles each layer with the ISO itself (`largeload → iso`) and can hold its own congestion rights (`largeload → arr`) and interconnection obligations (`largeload → interconnection`).
+- **Behind the meter.** On-site or colocated generation supplies part of the load (`largeload → bilateral`), so only the net draw reaches the grid.
+
+**Reading the graph.** Red money edges are charges and credits; dashed information edges show what sets each amount; green action edges are choices the load can make. Turn on regulation edges to see the FERC or NERC rule behind each mechanism.
 """
